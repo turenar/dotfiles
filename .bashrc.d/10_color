@@ -1,0 +1,37 @@
+#!/bin/sh
+
+function smart_pwd {
+    local pwdmaxlen=25
+    local trunc_symbol=".."
+    local dir=${PWD##*/}
+    local tmp=""
+    pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
+    NEW_PWD=${PWD/#$HOME/\~}
+    local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
+    if [ ${pwdoffset} -gt "0" ]
+    then
+tmp=${NEW_PWD:$pwdoffset:$pwdmaxlen}
+        tmp=${trunc_symbol}/${tmp#*/}
+        if [ "${#tmp}" -lt "${#NEW_PWD}" ]; then
+NEW_PWD=$tmp
+        fi
+fi
+}
+
+function boldtext {
+    echo "\\033[1m"$1"\\033[0m"
+}
+
+function bgcolor {
+    echo "\\033[48;5;"$1"m"
+}
+
+function fgcolor {
+    echo "\\033[38;5;"$1"m"
+}
+
+function resetcolor {
+    echo "\\033[0m"
+}
+
+

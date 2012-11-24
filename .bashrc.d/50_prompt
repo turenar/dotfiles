@@ -1,0 +1,48 @@
+#!/bin/sh
+
+function smart_pwd {
+    local pwdmaxlen=$(( $COLUMNS-35 ))
+    local trunc_symbol=".."
+    local dir=${PWD##*/}
+    local tmp=""
+    pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
+    NEW_PWD="${PWD/#$HOME/~}"
+	NEW_PWD_TRUNC=""
+    local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
+    if [ ${pwdoffset} -gt "0" ]
+    then
+        tmp=${NEW_PWD:$pwdoffset:$pwdmaxlen}
+        tmp=${trunc_symbol}/${tmp#*/}
+        if [ "${#tmp}" -lt "${#NEW_PWD}" ]; then
+            NEW_PWD_TRUNC="${trunc_symbol}"
+			NEW_PWD="${tmp:${#trunc_symbol}}"
+        fi
+    fi
+}
+
+function fancyprompt {
+    PROMPT_COMMAND="smart_pwd"
+	if [ "${UID}" -eq 0 ]; then
+		PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor 197)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")\e[$[COLUMNS]D'"$(resetcolor)\\]\\[$(bgcolor 197)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]gentoo\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor 196)\\]\n(root)# \\[$(resetcolor)\\]"
+	else
+		DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 55)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\e[$[COLUMNS]D\]'
+    	PS1="${DT}\\[$(bgcolor 17)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]gentoo\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\]\n\\[$(fgcolor 41)\\]\$(__git_ps1 '(%s) ')\\[$(fgcolor 208)\\]\$ \\[$(resetcolor)\\]"
+	fi
+}
+
+function dullprompt {
+    PROMPT_COMMAND=""
+	export PS1='\[\033[01;32m\]\u@gentoo\[\033[01;34m\] \w \$\[\033[00m\] '
+}
+case "$TERM" in
+	xterm-color|xterm-256color|rxvt*|screen-256color)
+		___COLOR_MODE=256
+        fancyprompt
+	    ;;
+	*)
+		___COLOR_MODE=16
+        dullprompt
+    	;;
+esac
+
+

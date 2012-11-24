@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -z "$1" ];then
+	dir=$1
+else
+	dir=${HOME}/.bashrc.d
+fi
+
+for i in ${dir}/*_*; do
+	source $i
+done
+
