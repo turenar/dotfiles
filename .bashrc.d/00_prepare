@@ -3,5 +3,6 @@
 case $TERM in
 	screen-*)
 	#screen-256color-*)
+		unset DISPLAY
 		TERM=screen-256color;;
 esac
