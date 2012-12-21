@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MYNAME=`gettail $0`
+MYNAME=`basename $0`
 MYTMPDIR="/tmp/${MYNAME}.$$"
 INODELISTF="${MYTMPDIR}/inode.lst"
 INODESORTF="${MYTMPDIR}/inode.sorted"
@@ -24,7 +24,7 @@ function usage() {
   cat <<_EOM_ 1>&2
 同一ファイルをハードリンクしてディスク領域を空かせるシェルプログラム。
 使用は自己責任でお願いします
-ver.6.3 (20110430)
+ver.6.4 (20120312)
 
 Usage:
   ${MYNAME} [options...]
@@ -41,15 +41,21 @@ Options:
 
 Details:
   サポートしていないファイル:
-     1. 空白が連続して入っているファイル
+     1. ファイル名に空白が連続して入っている
+	 2. ファイル名に改行が入っているファイル名
     これらのファイルを処理しようとするとエラーが発生したり、
     目的のファイルではないファイルが処理される可能性があります。
+  サポートが怪しいファイル:
+     1. ファイル名に空白が入っている
 
   キャッシュ使用時の注意:
     変更されるようなファイルはキャッシュ機能を使用しないでください。
     エラーが発生する可能性があります。その際はキャッシュファイルを削除してください。
 
 ReleaseNote:
+  2012-03-12:
+    sortコマンドをLC_ALLで起動するように修正。
+	キャッシュ操作の高速化24->4s
   2011-04-30:
     ファイルへの出力の仕方を修正。
   2011-04-20:
@@ -66,7 +72,7 @@ ReleaseNote:
   2010-12-28:
     初リリース
 
-Copyright (C) 2010-2011 Turenai Project
+Copyright (C) 2010-2012 Turenai Project
 Licensed under CC-NC-BY.
 _EOM_
 }
@@ -130,7 +136,7 @@ if [ -z "${ALLFILEMODE}" ]; then
 	STARTDATE=`date '+%s'`
 	echo -n "inodelistをソートして重複を取り除いています..." >&2
 	#								  ↓スペースとタブ
-	sort -un ${INODELISTF} | sed -e 's/^[ 	]*//g' > ${INODESORTF}
+	LC_ALL=C sort -un ${INODELISTF} | sed -e 's/^[ 	]*//g' > ${INODESORTF}
 	ENDDATE=`date '+%s'`
 	calcdate ${STARTDATE} ${ENDDATE}
 
@@ -154,7 +160,7 @@ if [ '(' ! -z "${CACHEMODE}" ')' -a '(' -e "${CACHEFILE}" ')' ]; then
 		echo -n "キャッシュを読み込んでいます..." >&2
 		STARTDATE=`date '+%s'`
 		sed -e "s/^/${NOCACHEHASH}  /" ${UNIQINODEF} > ${TEMPFILE}
-		cat ${CACHEFILE} ${TEMPFILE} | sed -e 's/  \.\//  /' | awk '{print $2$3$4$5$6$7$8$9,sprintf("%010g",NR),$0}' | sort \
+		cat ${CACHEFILE} ${TEMPFILE} | sed -e 's/  \.\//  /' | awk '{print $2$3$4$5$6$7$8$9,sprintf("%010g",NR),$0}' | LC_ALL=C sort \
 			| cut -d " " -f3-> ${HashCombinedFile}
 		# キャッシュに存在して実在しているファイルのハッシュ・ファイルリストの作成
 		uniq -d -s34 ${HashCombinedFile} > ${HASHF}
@@ -198,7 +204,7 @@ calcdate ${STARTDATE} ${ENDDATE}
 
 STARTDATE=`date '+%s'`
 echo -n "ハッシュをソートしています..." >&2
-sort ${HASHF} > ${HASHSORTF}
+LC_ALL=C sort ${HASHF} > ${HASHSORTF}
 ENDDATE=`date '+%s'`
 calcdate ${STARTDATE} ${ENDDATE}
 
