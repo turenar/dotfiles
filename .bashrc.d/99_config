@@ -37,7 +37,6 @@ shopt -s checkwinsize
 # なにも入力してないときはコマンド名を補完しない。
 # (メチャクチャ候補が多いので。)
 shopt -s no_empty_cmd_completion
-complete -d cd
 
 stty kill undef
 stty stop undef
