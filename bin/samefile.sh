@@ -78,7 +78,7 @@ if [ -z "${ALLFILEMODE}" ]; then
 	STARTDATE=`date '+%s'`
 	echo -n "inodelistをソートしています..." >&2
 	#								  ↓スペースとタブ
-	sort ${INODELISTF} | sed -e 's/^[ 	]*//g' > ${INODESORTF}
+	sort -un ${INODELISTF} | sed -e 's/^[ 	]*//g' > ${INODESORTF}
 	ENDDATE=`date '+%s'`
 	calcdate ${STARTDATE} ${ENDDATE}
 
@@ -97,15 +97,15 @@ if [ -z "${ALLFILEMODE}" ]; then
 
 	while read FL 0<&3
 	do
-		PREVFILE=${NOWFILE}
-		PREVINODE=${NOWINODE}
-		NOWINODE=`echo ${FL} | cut -d' ' -f1`
+#		PREVFILE=${NOWFILE}
+#		PREVINODE=${NOWINODE}
+#		NOWINODE=`echo ${FL} | cut -d' ' -f1`
 		NOWFILE=`echo ${FL} | cut -d' ' -f2-`
 
-		if [ "${NOWINODE}" != "${PREVINODE}" ]; then
+#		if [ "${NOWINODE}" != "${PREVINODE}" ]; then
 			echo -n ${NOWFILE} 1>&4
 			echo -ne '\0' 1>&4
-		fi
+#		fi
 	done
 	exec 3<&-
 	exec 4>&-
