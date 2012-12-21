@@ -128,30 +128,16 @@ if [ -z "${ALLFILEMODE}" ]; then
 
 	STARTDATE=`date '+%s'`
 	echo -n "ファイルリストを作成しています..." >&2
-	BUFIFS=$IFS
-	IFS=" "
 
-	NOWFILE=
-	NOWINODE=
 
-	exec 3< ${INODESORTF}
-	exec 4> ${UNIQINODEF}
-
-	while read NOWINODE NOWFILE 0<&3
-	do
-		echo ${NOWFILE} 1>&4
-	done
-	exec 3<&-
-	exec 4>&-
-
-	IFS=$BUFIFS
+	cut -d " " -f2- < ${INODESORTF} >${UNIQINODEF}
 
 	ENDDATE=`date '+%s'`
 	calcdate ${STARTDATE} ${ENDDATE}
 else
 	echo -n "ファイルリストを作成しています..." >&2
 	STARTDATE=`date '+%s'`
-	find -L . -type f > ${UNIQINODEF}
+	find -L . -type f -print > ${UNIQINODEF}
 	ENDDATE=`date '+%s'`
 	calcdate ${STARTDATE} ${ENDDATE}
 fi
@@ -159,9 +145,9 @@ fi
 if [ '(' ! -z "${CACHEMODE}" ')' -a '(' -e "${CACHEFILE}" ')' ]; then
 		echo -n "キャッシュを読み込んでいます..." >&2
 		STARTDATE=`date '+%s'`
-		sed -e "s/^/${NOCACHEHASH}  /" ${UNIQINODEF} | sed -e 's/  .\//  /' > ${TEMPFILE}
-		cat ${CACHEFILE} ${TEMPFILE} | awk '{print $2,sprintf("%010g",NR),$0}' | sort \
-			| cut -d " " -f3- > ${HashCombinedFile}
+		sed -e "s/^/${NOCACHEHASH}  /" ${UNIQINODEF} > ${TEMPFILE}
+		cat ${CACHEFILE} ${TEMPFILE} | sed -e 's/  \.\//  /' | awk '{print $2$3$4$5$6$7$8$9,sprintf("%010g",NR),$0}' | sort \
+			| cut -d " " -f3-> ${HashCombinedFile}
 		# キャッシュに存在して実在しているファイルのハッシュ・ファイルリストの作成
 		uniq -d -s34 ${HashCombinedFile} > ${HASHF}
 		# キャッシュに存在しないか実在しないファイルのハッシュ・ファイルリストの作成
@@ -183,6 +169,7 @@ if [ '(' ! -z "${CACHEMODE}" ')' -a '(' -e "${CACHEFILE}" ')' ]; then
 		exec 3>&-
 		ENDDATE=`date '+%s'`
 		calcdate ${STARTDATE} ${ENDDATE}
+		IFS=${BUFIFS}
 else
 	mv ${UNIQINODEF} ${HASHMAKEFILE}
 fi
@@ -193,7 +180,7 @@ STARTDATE=`date '+%s'`
 echo -n "ハッシュを計算しています..." >&2
 xargs --no-run-if-empty -d '\n' md5sum < ${HASHMAKEFILE} >> ${HASHF}
 ENDDATE=`date '+%s'`
-wc -l ${HASHMAKEFILE} | cut -d ' ' -f1
+echo -n $(wc -l ${HASHMAKEFILE} | cut -d ' ' -f1) >&2
 echo -n "/" >&2
 countline ${HASHF}
 echo -n ": "
