@@ -23,8 +23,8 @@ ENDDATE=0
 function usage() {
   cat <<_EOM_ 1>&2
 同一ファイルをハードリンクしてディスク領域を空かせるシェルプログラム。
-使用は自己責任でお願いします
-ver.6.4 (20120312)
+使用は自己責任でお願いします。
+ver.6.4.1 (20121221)
 
 Usage:
   ${MYNAME} [options...]
@@ -50,9 +50,11 @@ Details:
 
   キャッシュ使用時の注意:
     変更されるようなファイルはキャッシュ機能を使用しないでください。
-    エラーが発生する可能性があります。その際はキャッシュファイルを削除してください。
+    予期せぬ動作をする可能性があります。
 
 ReleaseNote:
+  2012-12-21:
+    ヘルプの更新
   2012-03-12:
     sortコマンドをLC_ALLで起動するように修正。
 	キャッシュ操作の高速化24->4s
@@ -64,7 +66,6 @@ ReleaseNote:
     ハッシュのキャッシュ機能を付けた。
   2011-03-06:
     cutではなくreadを使うことによるループの処理速度の向上。
-    作者の環境でループ内91+186sが3+5sになりました。全体で約40%の処理速度の向上。
   2011-01-14:
     sort -un を使うことによる処理速度の向上
   2011-01-07:
@@ -73,7 +74,7 @@ ReleaseNote:
     初リリース
 
 Copyright (C) 2010-2012 Turenai Project
-Licensed under CC-NC-BY.
+Licensed under MIT License.
 _EOM_
 }
 
@@ -114,7 +115,7 @@ do
 done
 
 if [ ! -z "${DRYRUNMODE}" ]; then
-	echo !!Warning: DRY RUN MODE!! >&2
+	echo '!!Warning: DRY RUN MODE!!' >&2
 fi
 
 echo "Temporary directory: ${MYTMPDIR}" >&2
