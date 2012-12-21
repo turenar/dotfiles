@@ -7,9 +7,15 @@ INODESORTF="${MYTMPDIR}/inode.sorted"
 UNIQINODEF="${MYTMPDIR}/file.uniq"
 HASHF="${MYTMPDIR}/md5sum"
 HASHSORTF="${HASHF}.sorted"
+CACHEFILE="${MYNAME}.cache"
+TEMPFILE="${MYTMPDIR}/temp"
+HashCombinedFile="${MYTMPDIR}/hash.combined"
 DRYRUNMODE=yes
 DEBUGMODE=
 ALLFILEMODE=
+CACHEMODE=
+NOCACHEHASH=00000000000000000000000000000000
+HASHMAKEFILE="${MYTMPDIR}/hashcheck"
 
 STARTDATE=0
 ENDDATE=0
@@ -30,15 +36,18 @@ Options:
         ハードリンクの作成時にエラーが表示されることがあります。
   -H    inodeユニークなファイルを処理対象にする。 (ハードリンクされたファイルを含まない)
         [DEFAULT=yes]
+  -c    キャッシュを利用する。変更されるようなファイルには使用しないでください。
 
 Details:
   サポートしていないファイル:
-     1. 空白が連続している (例 "a  b")
-     2. 空白で終了している (例 "abc ")
+     1. 空白が入っているファイル (キャッシュ利用時)
     これらのファイルを処理しようとするとエラーが発生したり、
     目的のファイルではないファイルが処理される可能性があります。
 
 ReleaseNote:
+  2011-04-17:
+    ハッシュのキャッシュ機能を付けた。それに伴い
+    
   2011-03-06:
     cutではなくreadを使うことによるループの処理速度の向上。
     作者の環境でループ内91+186sが3+5sになりました。全体で約40%の処理速度の向上。
@@ -70,10 +79,10 @@ function destruct(){
 
 function countline(){
 	local linecount=`wc -l $1 | cut -d ' ' -f1`
-	echo -n "${linecount}files: " >&2
+	echo -n "${linecount}files" >&2
 }
 
-while getopts hndHae opt
+while getopts hndHace opt
 do
   case ${opt} in
     h ) usage
@@ -83,6 +92,7 @@ do
     d ) DEBUGMODE=yes;;
 	a ) ALLFILEMODE=yes;;
     H ) ALLFILEMODE=;;
+	c ) CACHEMODE=yes;;
     ? ) usage
           exit 1;;
 	* ) echo "BUG FOUND: ${opt} is not caught in case" >&2;;
@@ -103,9 +113,10 @@ if [ -z "${ALLFILEMODE}" ]; then
 	
 	STARTDATE=`date '+%s'`
 	echo -n "inodelistを作成しています..." >&2
-	find -L . -type f -print0 | xargs -0 ls -Ui1 > ${INODELISTF}
+	find -L . '!' -name "${CACHEFILE}" -type f -print0 | xargs -0 ls -Ui1 > ${INODELISTF}
 	ENDDATE=`date '+%s'`
 	countline ${INODELISTF}
+	echo -n ": "
 	calcdate ${STARTDATE} ${ENDDATE}
 
 	STARTDATE=`date '+%s'`
@@ -120,8 +131,6 @@ if [ -z "${ALLFILEMODE}" ]; then
 	BUFIFS=$IFS
 	IFS=" "
 
-	PREVFILE=
-	PREVINODE=
 	NOWFILE=
 	NOWINODE=
 
@@ -130,8 +139,7 @@ if [ -z "${ALLFILEMODE}" ]; then
 
 	while read NOWINODE NOWFILE 0<&3
 	do
-		echo -n ${NOWFILE} 1>&4
-		echo -ne '\0' 1>&4
+		echo ${NOWFILE} 1>&4
 	done
 	exec 3<&-
 	exec 4>&-
@@ -143,16 +151,52 @@ if [ -z "${ALLFILEMODE}" ]; then
 else
 	echo -n "ファイルリストを作成しています..." >&2
 	STARTDATE=`date '+%s'`
-	find -L . -type f -print0 > ${UNIQINODEF}
+	find -L . -type f > ${UNIQINODEF}
 	ENDDATE=`date '+%s'`
 	calcdate ${STARTDATE} ${ENDDATE}
 fi
 
+if [ '(' ! -z "${CACHEMODE}" ')' -a '(' -e "${CACHEFILE}" ')' ]; then
+		echo -n "キャッシュを読み込んでいます..." >&2
+		STARTDATE=`date '+%s'`
+		sed -e "s/^/${NOCACHEHASH}  /" ${UNIQINODEF} | sed -e 's/  .\//  /' > ${TEMPFILE}
+		cat ${CACHEFILE} ${TEMPFILE} | awk '{print $2,sprintf("%010g",NR),$0}' | sort \
+			| cut -d " " -f3- > ${HashCombinedFile}
+		# キャッシュに存在して実在しているファイルのハッシュ・ファイルリストの作成
+		uniq -d -s34 ${HashCombinedFile} > ${HASHF}
+		# キャッシュに存在しないか実在しないファイルのハッシュ・ファイルリストの作成
+		uniq -u -s34 ${HashCombinedFile} > ${TEMPFILE}2
+		
+		BUFIFS=$IFS
+		IFS=" "
+		touch ${HASHMAKEFILE}
+		exec 3< ${TEMPFILE}2
+		while read uhash ufile 0<&3
+		do
+			if [ "${uhash}" = "${NOCACHEHASH}" ]; then
+				# 新しく登録されたファイル
+				echo ${ufile} >> ${HASHMAKEFILE}
+			#else
+				# 削除された（または動かされた）ファイルは何もしない
+			fi
+		done
+		exec 3>&-
+		ENDDATE=`date '+%s'`
+		calcdate ${STARTDATE} ${ENDDATE}
+else
+	mv ${UNIQINODEF} ${HASHMAKEFILE}
+fi
+
+
+
 STARTDATE=`date '+%s'`
 echo -n "ハッシュを計算しています..." >&2
-xargs -0 md5sum < ${UNIQINODEF} > ${HASHF}
+xargs --no-run-if-empty -d '\n' md5sum < ${HASHMAKEFILE} >> ${HASHF}
 ENDDATE=`date '+%s'`
+wc -l ${HASHMAKEFILE} | cut -d ' ' -f1
+echo -n "/" >&2
 countline ${HASHF}
+echo -n ": "
 calcdate ${STARTDATE} ${ENDDATE}
 
 STARTDATE=`date '+%s'`
@@ -163,49 +207,50 @@ calcdate ${STARTDATE} ${ENDDATE}
 
 if [ ! -z "${DRYRUNMODE}" ]; then
 	echo "ハードリンクをスキップ" >&2
-	exit 0
+else
+	echo "同一ファイルをハードリンクしています..." >&2
+
+
+	BUFIFS=$IFS
+	IFS=" "
+
+	PROCFCOUNT=0
+
+	PREVFILE=
+	PREVHASH=
+	NOWFILE=
+	NOWHASH=
+	exec 3< ${HASHSORTF}
+	while read NOWHASH NOWFILE 0<&3
+	do
+		if [ "${NOWHASH}" = "${PREVHASH}" ]; then
+			diff -q "${NOWFILE}" "${PREVFILE}"
+			ISDIFF=$?
+			if [ ${ISDIFF} -eq 0 ]; then
+				let PROCFCOUNT="${PROCFCOUNT} + 1"
+				echo -ne "\r"
+				ln -f "${PREVFILE}" "${NOWFILE}"
+				printf "%5d files processed. " ${PROCFCOUNT}
+				if [ ! -z "${DEBUGMODE}" ]; then			
+					echo "ln -f '${PREVFILE}' '${NOWFILE}'"
+				fi
+			elif [ ${ISDIFF} -eq 2 -o ${ISDIFF} -eq 1 ]; then
+				echo "different file: ${PREVFILE} ${NOWFILE}" >&2
+			else
+				echo "ERROR: diff returned ${ISDIFF}: diff '${PREVFILE}' '${NOWFILE}'" >&2
+			fi
+		fi
+		PREVFILE=${NOWFILE}
+		PREVHASH=${NOWHASH}
+	done
+	exec 3<&-
+
+	IFS=$BUFIFS
+
+	ENDDATE=`date '+%s'`
+	calcdate ${STARTDATE} ${ENDDATE}
 fi
 
-echo "同一ファイルをハードリンクしています..." >&2
-
-
-BUFIFS=$IFS
-IFS=" "
-
-PROCFCOUNT=0
-
-PREVFILE=
-PREVHASH=
-NOWFILE=
-NOWHASH=
-exec 3< ${HASHSORTF}
-while read NOWHASH NOWFILE 0<&3
-do
-	if [ "${NOWHASH}" = "${PREVHASH}" ]; then
-		diff "${NOWFILE}" "${PREVFILE}"
-		ISDIFF=$?
-		if [ ${ISDIFF} -eq 0 ]; then
-			let PROCFCOUNT="${PROCFCOUNT} + 1"
-			echo -ne "\r"
-			ln -f "${PREVFILE}" "${NOWFILE}"
-			printf "%5d files processed. " ${PROCFCOUNT}
-			if [ ! -z "${DEBUGMODE}" ]; then			
-				echo "ln -f '${PREVFILE}' '${NOWFILE}'"
-			fi
-		elif [ ${ISDIFF} -eq 2 ]; then
-			echo "different file: ${PREVFILE} ${NOWFILE}" >&2
-		else
-			echo "ERROR: diff returned ${ISDIFF}: diff '${PREVFILE}' '${NOWFILE}'" >&2
-		fi
-	fi
-	PREVFILE=${NOWFILE}
-	PREVHASH=${NOWHASH}
-done
-exec 3<&-
-
-IFS=$BUFIFS
-
-ENDDATE=`date '+%s'`
-calcdate ${STARTDATE} ${ENDDATE}
-
-
+if [ ! -z "${CACHEMODE}" ]; then
+	cp ${HASHF} ${CACHEFILE}
+fi
