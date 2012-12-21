@@ -23,7 +23,8 @@ ENDDATE=0
 function usage() {
   cat <<_EOM_ 1>&2
 同一ファイルをハードリンクしてディスク領域を空かせるシェルプログラム。
-ver.20110306
+使用は自己責任でお願いします
+ver.6.3 (20110430)
 
 Usage:
   ${MYNAME} [options...]
@@ -40,14 +41,21 @@ Options:
 
 Details:
   サポートしていないファイル:
-     1. 空白が入っているファイル (キャッシュ利用時)
+     1. 空白が連続して入っているファイル
     これらのファイルを処理しようとするとエラーが発生したり、
     目的のファイルではないファイルが処理される可能性があります。
 
+  キャッシュ使用時の注意:
+    変更されるようなファイルはキャッシュ機能を使用しないでください。
+    エラーが発生する可能性があります。その際はキャッシュファイルを削除してください。
+
 ReleaseNote:
+  2011-04-30:
+    ファイルへの出力の仕方を修正。
+  2011-04-20:
+    諸々のバグ修正
   2011-04-17:
-    ハッシュのキャッシュ機能を付けた。それに伴い
-    
+    ハッシュのキャッシュ機能を付けた。
   2011-03-06:
     cutではなくreadを使うことによるループの処理速度の向上。
     作者の環境でループ内91+186sが3+5sになりました。全体で約40%の処理速度の向上。
@@ -157,16 +165,18 @@ if [ '(' ! -z "${CACHEMODE}" ')' -a '(' -e "${CACHEFILE}" ')' ]; then
 		IFS=" "
 		touch ${HASHMAKEFILE}
 		exec 3< ${TEMPFILE}2
+		exec 4> ${HASHMAKEFILE}
 		while read uhash ufile 0<&3
 		do
 			if [ "${uhash}" = "${NOCACHEHASH}" ]; then
 				# 新しく登録されたファイル
-				echo ${ufile} >> ${HASHMAKEFILE}
+				echo ${ufile} >&4
 			#else
 				# 削除された（または動かされた）ファイルは何もしない
 			fi
 		done
-		exec 3>&-
+		exec 3<&-
+		exec 4>&-
 		ENDDATE=`date '+%s'`
 		calcdate ${STARTDATE} ${ENDDATE}
 		IFS=${BUFIFS}
@@ -211,7 +221,7 @@ else
 	while read NOWHASH NOWFILE 0<&3
 	do
 		if [ "${NOWHASH}" = "${PREVHASH}" ]; then
-			diff -q "${NOWFILE}" "${PREVFILE}"
+			diff "${NOWFILE}" "${PREVFILE}" > /dev/null
 			ISDIFF=$?
 			if [ ${ISDIFF} -eq 0 ]; then
 				let PROCFCOUNT="${PROCFCOUNT} + 1"
