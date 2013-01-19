@@ -1,19 +1,19 @@
 #!/bin/sh
 
 function boldtext {
-    echo "\\033[1m"$1"\\033[0m"
+	echo "\\033[1m"$1"\\033[0m"
 }
 
 function bgcolor {
-    echo "\\033[48;5;"$1"m"
+	echo "\\033[48;5;"$1"m"
 }
 
 function fgcolor {
-    echo "\\033[38;5;"$1"m"
+	echo "\\033[38;5;"$1"m"
 }
 
 function resetcolor {
-    echo "\\033[0m"
+	echo "\\033[0m"
 }
 
 

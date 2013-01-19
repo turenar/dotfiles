@@ -15,10 +15,10 @@ _EOM_
 while getopts ho opt
 do
   case ${opt} in
-    h ) usage
-        exit 0;;
-    ? ) usage
-         exit 1;;
+	h ) usage
+		exit 0;;
+	? ) usage
+		 exit 1;;
   esac
 done
 

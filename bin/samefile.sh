@@ -100,16 +100,16 @@ function countline(){
 while getopts hndHace opt
 do
   case ${opt} in
-    h ) usage
-          exit 0;;
-    n ) DRYRUNMODE=yes;;
+	h ) usage
+		  exit 0;;
+	n ) DRYRUNMODE=yes;;
 	e ) DRYRUNMODE=;;
-    d ) DEBUGMODE=yes;;
+	d ) DEBUGMODE=yes;;
 	a ) ALLFILEMODE=yes;;
-    H ) ALLFILEMODE=;;
+	H ) ALLFILEMODE=;;
 	c ) CACHEMODE=yes;;
-    ? ) usage
-          exit 1;;
+	? ) usage
+		  exit 1;;
 	* ) echo "BUG FOUND: ${opt} is not caught in case" >&2;;
   esac
 done
