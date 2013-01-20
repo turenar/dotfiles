@@ -1,0 +1,11 @@
+#!/bin/bash
+GENTOO_VM="sun-jdk-1.6"
+export LD_LIBRARY_PATH="/usr/lib/jvm/sun-jdk-1.6/jre/lib/amd64/"
+
+if [ -z "$1" ]; then
+	killall ibus-daemon
+	java -Xmx1024m -Xms512m -jar ~/.minecraft/launcher.jar
+	ibus-daemon --xim -r &
+else
+	~/lib/teketo-mclauncher/bin/tmclauncher $@
+fi
