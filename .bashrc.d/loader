@@ -1,12 +1,12 @@
 #!/bin/sh
+if [[ $- = *i* ]]; then
+	if [ -z "$1" ];then
+		dir=$1
+	else
+		dir=${HOME}/.bashrc.d
+	fi
 
-if [ -z "$1" ];then
-	dir=$1
-else
-	dir=${HOME}/.bashrc.d
+	for i in ${dir}/*_*; do
+		source $i
+	done
 fi
-
-for i in ${dir}/*_*; do
-	source $i
-done
-
