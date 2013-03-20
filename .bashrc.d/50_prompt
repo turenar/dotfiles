@@ -37,7 +37,7 @@ function fancyprompt {
 
 function dullprompt {
 	PROMPT_COMMAND=""
-	export PS1='\[\033[01;32m\]\u@gentoo\[\033[01;34m\] \w \$\[\033[00m\] '
+	export PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] '
 }
 case "$TERM" in
 	xterm-color|xterm-256color|rxvt*|screen-256color)
