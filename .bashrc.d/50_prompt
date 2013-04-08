@@ -23,7 +23,11 @@ function smart_pwd {
 function fancyprompt {
 	PROMPT_COMMAND="smart_pwd"
 	if [ "${UID}" -eq 0 ]; then
-		PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor 197)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")\e[$[COLUMNS]D'"$(resetcolor)\\]\\[$(bgcolor 197)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]\h\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor 196)\\]\n(root)# \\[$(resetcolor)\\]"
+		if [ "${HOSTNAME}" = "sugaya" ]; then
+			PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor 201)$(fgcolor 190)"'$(LC_ALL=C date +"%a %b %2d %T")\e[$[COLUMNS]D'"$(resetcolor)\\]\\[$(bgcolor 201)$(fgcolor 190)\\]\u\\[$(fgcolor 136)\\]@\\[$(fgcolor 190)\\]\h\\[$(fgcolor 114)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 220)\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor 201)\\]\n(root)# \\[$(resetcolor)\\]"
+		else
+			PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor 197)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")\e[$[COLUMNS]D'"$(resetcolor)\\]\\[$(bgcolor 197)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]\h\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor 196)\\]\n(root)# \\[$(resetcolor)\\]"
+		fi
 	else
 		if [ "${HOSTNAME}" = "sugaya" ]; then
 			DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 213)$(fgcolor 130)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\e[$[COLUMNS]D\]'
