@@ -3,10 +3,6 @@
 
 source /etc/profile.d/bash-completion.sh
 
-function have {
-	which $1 >/dev/null 2>&1 && return 1
-	return 0
-}
 
 
 #for i in ${HOME}/.bash_completion.d/*; do
