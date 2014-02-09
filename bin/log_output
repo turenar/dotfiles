@@ -75,9 +75,22 @@ function main() {
 		rm ${infile}
 
 		SECONDS=$(date +%s)
-		while read -u 9 line; do
-			echo "[${SECONDS}] ${line}" >&8
-		done
+
+		if [ -v _max_line ]; then
+			i=0
+			while read -u 9 line; do
+				echo "[${SECONDS}] ${line}" >&8
+				let i++
+				if [ $i -ge ${_max_line} ]; then
+					break
+				fi
+			done
+			cat <&9 >/dev/null
+		else
+			while read -u 9 line; do
+				echo "[${SECONDS}] ${line}" >&8
+			done
+		fi
 	else
 		"$@" >&8 2>&8 &
 		pid=$!
