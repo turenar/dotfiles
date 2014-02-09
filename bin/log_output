@@ -1,5 +1,25 @@
 #!/bin/bash
 # vim: ts=4:sw=4
+# This file is under public domain. You can do anything without any permissions.
+
+function print_help()
+{
+	cat <<EOF
+usage: $0 [OPTION]... [--] <command> [<arg>...]
+options:
+  -P, --print-always      print even if command is succeeded
+  -M, --max-line <line>   print the first <line> lines instead of all;
+                           with the leading '-', print all but the last <line> lines.
+  -t, --timestamp         print timestamp each line (TOOOOOOO SLOW)
+  -h, --help              display this help and exit
+
+
+This script is faster than https://github.com/kazuho/kaztools/blob/master/cronlog,
+  but if --timestamp is passed, this is too much slowly than that script.
+
+This script is under public domain. You can do anything without any permissions.
+EOF
+}
 
 function main() {
 	local __opt __arg
@@ -70,19 +90,6 @@ function main() {
 			cat <&7
 		fi
 	fi
-}
-
-function print_help()
-{
-	cat <<EOF
-usage: $0 [OPTION]... [--] <command> [<arg>...]
-options:
-  -t, --timestamp         print timestamp each line (SLOW)
-  -P, --print-always      print even if command is succeeded
-  -M, --max-line <line>   print the first <line> lines instead of all;
-                           with the leading '-', print all but the last <line> lines.
-  -h, --help              display this help and exit
-EOF
 }
 
 function _die() {
