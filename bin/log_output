@@ -41,26 +41,26 @@ function main() {
 		_die 'missing operand'
 	fi
 
-	# trap output
-	infile=$(mktemp -u)
-	mkfifo -m600 ${infile}
-	$@ >${infile} 2>&1 &
-	pid=$!
-	exec 9<${infile}
-	rm ${infile}
-
 	outfile=$(mktemp)
 	exec 8>${outfile}
 	exec 7<${outfile}
 	rm ${outfile}
+	# trap output if filter (aka. _print_timestamp) enabled
+	if [ -n "${_print_timestamp}" ]; then
+		infile=$(mktemp -u)
+		mkfifo -m600 ${infile}
+		$@ >${infile} 2>&1 &
+		pid=$!
+		exec 9<${infile}
+		rm ${infile}
 
-	while read -u 9 line; do
-		if [ -z "${_print_timestamp}" ]; then
-			echo "${line}" >&8
-		else
+		while read -u 9 line; do
 			echo "[$(date +%s)] ${line}" >&8
-		fi
-	done
+		done
+	else
+		$@ >&8 2>&8 &
+		pid=$!
+	fi
 
 	wait ${pid}
 	if [ -n "${_print_always}" -o $? -ne 0 ]; then
