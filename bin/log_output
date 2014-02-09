@@ -1,0 +1,107 @@
+#!/bin/bash
+# vim: ts=4:sw=4
+
+function main() {
+	local __opt __arg
+
+	while [ -n "$1" ]; do
+		if [[ "$1" == --*=* ]]; then
+			__opt=${1%%=*}
+			__arg="${1#*=}"
+		elif [[ "$1" == -* ]]; then
+			__opt="$1"
+			__arg="$2"
+		else
+			break
+		fi
+		case "${__opt}" in
+			-M|--max-line)
+				_max_line=$__arg
+				shift;;
+			-P|--print-always)
+				_print_always=true;;
+			-t|--timestamp)
+				_print_timestamp=true;;
+			-h|--help)
+				print_help
+				exit 0;;
+			--)
+				shift
+				break;;
+			-*)
+				_die "Unknown option: $1";;
+			*)
+				break # dead code
+		esac
+
+		shift
+	done
+
+	if [ -z "$1" ]; then
+		_die 'missing operand'
+	fi
+
+	# trap output
+	infile=$(mktemp -u)
+	mkfifo -m600 ${infile}
+	$@ >${infile} 2>&1 &
+	pid=$!
+	exec 9<${infile}
+	rm ${infile}
+
+	outfile=$(mktemp)
+	exec 8>${outfile}
+	exec 7<${outfile}
+	rm ${outfile}
+
+	while read -u 9 line; do
+		if [ -z "${_print_timestamp}" ]; then
+			echo "${line}" >&8
+		else
+			echo "[$(date +%s)] ${line}" >&8
+		fi
+	done
+
+	wait ${pid}
+	if [ -n "${_print_always}" -o $? -ne 0 ]; then
+		if [ -v _max_line ]; then
+			head -n ${_max_line} <&7
+		else
+			cat <&7
+		fi
+	fi
+}
+
+function print_help()
+{
+	cat <<EOF
+usage: $0 [OPTION]... [--] <command> [<arg>...]
+options:
+  -t, --timestamp         print timestamp each line (SLOW)
+  -P, --print-always      print even if command is succeeded
+  -M, --max-line <line>   print the first <line> lines instead of all;
+                           with the leading '-', print all but the last <line> lines.
+  -h, --help              display this help and exit
+EOF
+}
+
+function _die() {
+	echo $1 >&2
+	exit 1
+}
+
+function test_bool() {
+	test "$1" = "true"
+	return $?
+}
+
+function if_bool() {
+	test_bool $1 && echo $2
+}
+
+function _debug() {
+	test_bool $_opt_verbose && echo $@
+}
+
+
+main $@
