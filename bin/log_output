@@ -8,7 +8,7 @@ function print_help()
 usage: $0 [OPTION]... [--] <command> [<arg>...]
 options:
   -P, --print-always      print even if command is succeeded
-  -M, --max-line <line>   print the first <line> lines instead of all;
+  -M, --max-line N        print the first N lines instead of all;
                            with the leading '-', print all but the last <line> lines.
   -t, --timestamp         print timestamp each line (TOOOOOOO SLOW)
   -h, --help              display this help and exit
@@ -16,6 +16,8 @@ options:
 
 This script is usually faster than https://github.com/kazuho/kaztools/blob/master/cronlog,
   but if --timestamp is passed, this is too much slowly than that script.
+You can specify '--max-line N' option with '--timestamp'. If you specify
+  small number as N, it's sometimes faster than \`cronlog <command> | head -n N'
 
 This script is under public domain. You can do anything without any permissions.
 EOF
