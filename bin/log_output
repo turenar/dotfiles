@@ -97,13 +97,15 @@ function main() {
 	fi
 
 	wait ${pid}
-	if [ -n "${_print_always}" -o $? -ne 0 ]; then
+	errorcode=$?
+	if [ -n "${_print_always}" -o ${errorcode} -ne 0 ]; then
 		if [ -v _max_line ]; then
 			head -n ${_max_line} <&7
 		else
 			cat <&7
 		fi
 	fi
+	exit ${errorcode}
 }
 
 function _die() {
