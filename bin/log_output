@@ -14,7 +14,7 @@ options:
   -h, --help              display this help and exit
 
 
-This script is faster than https://github.com/kazuho/kaztools/blob/master/cronlog,
+This script is usually faster than https://github.com/kazuho/kaztools/blob/master/cronlog,
   but if --timestamp is passed, this is too much slowly than that script.
 
 This script is under public domain. You can do anything without any permissions.
@@ -69,16 +69,17 @@ function main() {
 	if [ -n "${_print_timestamp}" ]; then
 		infile=$(mktemp -u)
 		mkfifo -m600 ${infile}
-		$@ >${infile} 2>&1 &
+		"$@" >${infile} 2>&1 &
 		pid=$!
 		exec 9<${infile}
 		rm ${infile}
 
+		SECONDS=$(date +%s)
 		while read -u 9 line; do
-			echo "[$(date +%s)] ${line}" >&8
+			echo "[${SECONDS}] ${line}" >&8
 		done
 	else
-		$@ >&8 2>&8 &
+		"$@" >&8 2>&8 &
 		pid=$!
 	fi
 
