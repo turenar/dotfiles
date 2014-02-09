@@ -45,6 +45,8 @@ function main() {
 				_print_always=true;;
 			-t|--timestamp)
 				_print_timestamp=true;;
+			-E|--print-exitcode)
+				_print_exitcode=true;;
 			-h|--help)
 				print_help
 				exit 0;;
@@ -106,6 +108,14 @@ function main() {
 			head -n ${_max_line} <&7
 		else
 			cat <&7
+		fi
+		if [ -n "${_print_exitcode}" ]; then
+			msg="<$(basename "$0")> exit $errorcode"
+			if [ -n "${_print_timestamp}" ]; then
+				echo "[${SECONDS}] $msg"
+			else
+				echo "$msg"
+			fi
 		fi
 	fi
 	exit ${errorcode}
