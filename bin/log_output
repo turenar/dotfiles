@@ -129,4 +129,4 @@ function _debug() {
 }
 
 
-main $@
+main "$@"
