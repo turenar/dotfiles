@@ -38,6 +38,7 @@ function main() {
 		fi
 		case "${__opt}" in
 			-M|--max-line)
+				test -z "${__arg}" && _die "'${__opt}' requires argument"
 				_max_line=$__arg
 				shift;;
 			-P|--print-always)
@@ -51,7 +52,7 @@ function main() {
 				shift
 				break;;
 			-*)
-				_die "Unknown option: $1";;
+				_die "unknown option: $1";;
 			*)
 				break # dead code
 		esac
@@ -111,21 +112,8 @@ function main() {
 }
 
 function _die() {
-	echo $1 >&2
+	echo "$(basename "$0"): $1" >&2
 	exit 1
-}
-
-function test_bool() {
-	test "$1" = "true"
-	return $?
-}
-
-function if_bool() {
-	test_bool $1 && echo $2
-}
-
-function _debug() {
-	test_bool $_opt_verbose && echo $@
 }
 
 
