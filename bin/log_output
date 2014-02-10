@@ -121,15 +121,20 @@ function main() {
 	if [ -n "${_print_always}" -o ${errorcode} -ne 0 ]; then
 		if [ -v _max_line ]; then
 			head -n ${_max_line} <&7
+			if read -u7 ignore; then
+				msg=" <truncated output>"
+			fi
 		else
 			cat <&7
 		fi
 		if [ -n "${_print_exitcode}" ]; then
-			msg="<$(basename "$1")> exit $errorcode"
+			msg="${msg} <'$(basename "$1")' exit ${errorcode}>"
+		fi
+		if [ -n "${msg}" ]; then
 			if [ -n "${_print_timestamp}" ]; then
-				echo "[${SECONDS}] $msg"
+				echo "[${SECONDS}] [$(basename "$0"):${msg}]"
 			else
-				echo "$msg"
+				echo "[$(basename "$0"):${msg}]"
 			fi
 		fi
 	fi
