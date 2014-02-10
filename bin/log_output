@@ -10,15 +10,10 @@ options:
   -P, --print-always      print even if command is succeeded
   -M, --max-lines N       print the first N lines instead of all;
                            with the leading '-', print all but the last N lines.
-  -t, --timestamp         print timestamp each line (TOOOOOOO SLOW)
+  -t, --timestamp         print timestamp each line
   -E, --print-exitcode    print exit code at the end
   -h, --help              display this help and exit
 
-
-This script is usually faster than https://github.com/kazuho/kaztools/blob/master/cronlog,
-  but if --timestamp is passed, this is too much slowly than that script.
-You can specify '--max-line N' option with '--timestamp'. If you specify
-  small number as N, it's sometimes faster than \`cronlog <command> | head -n N'
 
 This script is under public domain. You can do anything without any permissions.
 EOF
@@ -108,19 +103,12 @@ function main() {
 		SECONDS=$(date +%s)
 
 		if [ -v _max_line ]; then
-			i=0
-			while read -u 9 line; do
-				echo "[${SECONDS}] ${line}" >&8
-				let i++
-				if [ $i -ge ${_max_line} ]; then
-					break
-				fi
-			done
+			head -n $(( ${_max_line} + 1 )) <&9 | \
+				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' >&8
+			# doesn't fifo handle broken pipe?
 			cat <&9 >/dev/null
 		else
-			while read -u 9 line; do
-				echo "[${SECONDS}] ${line}" >&8
-			done
+			awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' <&9 >&8
 		fi
 	else
 		"$@" >&8 2>&8 &
