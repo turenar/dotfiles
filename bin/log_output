@@ -17,6 +17,7 @@ options:
 
 This script is under public domain. You can do anything without any permissions.
 EOF
+	check_env
 }
 
 function main() {
@@ -133,6 +134,14 @@ function main() {
 		fi
 	fi
 	exit ${errorcode}
+}
+
+function check_env(){
+	check_cmd awk
+}
+
+function check_cmd() {
+	which $1 >/dev/null 2>&1 || echo "WARN: command '$1' is not found."
 }
 
 function _die() {
