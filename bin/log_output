@@ -12,6 +12,9 @@ options:
                            with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line
   -E, --print-exitcode    print exit code at the end
+      --check-requirement check required command (aka. awk) is installed and exit;
+                           no output if awk is installed. This option don't check
+                           whether commands work as we expect.
   -h, --help              display this help and exit
 
 
@@ -59,6 +62,9 @@ function main() {
 				_print_timestamp=true;;
 			-E|--print-exitcode)
 				_print_exitcode=true;;
+			--check-requirement)
+				check_env
+				exit 0;;
 			-h|--help)
 				print_help
 				exit 0;;
