@@ -8,7 +8,7 @@ function print_help()
 usage: $0 [OPTION]... [--] <command> [<arg>...]
 options:
   -P, --print-always      print even if command is succeeded
-  -M, --max-line N        print the first N lines instead of all;
+  -M, --max-lines N       print the first N lines instead of all;
                            with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line (TOOOOOOO SLOW)
   -E, --print-exitcode    print exit code at the end
@@ -51,15 +51,15 @@ function main() {
 		else
 			break
 		fi
-		echo -- ${__opt} ${__arg}
+		# echo -- ${__opt} ${__arg}
 		case "${__opt}" in
-			-M|--max-line)
+			-M|--lines|--max-line|--max-lines)
 				test -z "${__arg}" && _die "'${__opt}' requires argument"
 				_max_line=$__arg
 				__arg_consumed=true;;
 			-P|--print-always)
 				_print_always=true;;
-			-t|--timestamp)
+			-t|--tstamp|--timestamp)
 				_print_timestamp=true;;
 			-E|--print-exitcode)
 				_print_exitcode=true;;
