@@ -12,6 +12,8 @@ options:
                            with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line
   -E, --print-exitcode    print exit code at the end
+  -o, --output FILE       set output file instead of stdout. FILE will be truncated
+  -a, --append            append to file instead of truncate. use with '--output'
       --check-requirement check required command (aka. awk) is installed and exit;
                            no output if awk is installed. This option don't check
                            whether commands work as we expect.
@@ -50,7 +52,7 @@ function main() {
 		else
 			break
 		fi
-		# echo -- ${__opt} ${__arg}
+		# echo -- ${__opt} ${__arg} >&2
 		case "${__opt}" in
 			-M|--lines|--max-line|--max-lines)
 				test -z "${__arg}" && _die "'${__opt}' requires argument"
@@ -62,6 +64,12 @@ function main() {
 				_print_timestamp=true;;
 			-E|--print-exitcode)
 				_print_exitcode=true;;
+			-o|--output)
+				test -z "${__arg}" && _die "'${__opt}' requires argument"
+				_output="${__arg}"
+				__arg_consumed=true;;
+			-a|--append)
+				_out_append=true;;
 			--check-requirement)
 				check_env
 				exit 0;;
@@ -94,6 +102,16 @@ function main() {
 		_die 'missing operand'
 	fi
 
+	# handle --output
+	if [ -n "${_output}" ]; then
+		if [ -z "${_out_append}" ]; then
+			exec 1>"${_output}"
+		else
+			exec 1>>"${_output}"
+		fi
+	fi
+	# ----- arg parser end -----
+
 	outfile=$(mktemp)
 	exec 8>${outfile}
 	exec 7<${outfile}
@@ -112,8 +130,7 @@ function main() {
 		if [ -v _max_line ]; then
 			head -n $(( ${_max_line} + 1 )) <&9 | \
 				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' >&8
-			# doesn't fifo handle broken pipe?
-			cat <&9 >/dev/null
+			exec 9<&-
 		else
 			awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' <&9 >&8
 		fi
@@ -152,7 +169,7 @@ function check_env(){
 }
 
 function check_cmd() {
-	which $1 >/dev/null 2>&1 || echo "WARN: command '$1' is not found."
+	which $1 >/dev/null 2>&1 || echo "WARN: command '$1' is not found." >&2
 }
 
 function _die() {
