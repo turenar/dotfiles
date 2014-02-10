@@ -9,8 +9,9 @@ usage: $0 [OPTION]... [--] <command> [<arg>...]
 options:
   -P, --print-always      print even if command is succeeded
   -M, --max-line N        print the first N lines instead of all;
-                           with the leading '-', print all but the last <line> lines.
+                           with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line (TOOOOOOO SLOW)
+  -E, --print-exitcode    print exit code at the end
   -h, --help              display this help and exit
 
 
@@ -24,23 +25,38 @@ EOF
 }
 
 function main() {
-	local __opt __arg
+	local __opt __arg __saved_arg __arg_consumed __should_shift_arg
 
 	while [ -n "$1" ]; do
-		if [[ "$1" == --*=* ]]; then
+		__arg_consumed=''
+		__should_shift_arg='' # if true and __arg_consumed==true, shift argument
+		if [ -n "${__saved_arg}" ]; then # -abcdef...
+			__opt="-${__saved_arg:0:1}"
+			__arg="${__saved_arg:1}"
+			__saved_arg="$__arg"
+		elif [[ "$1" == --*=* ]]; then # --hoge=fuga
 			__opt=${1%%=*}
 			__arg="${1#*=}"
-		elif [[ "$1" == -* ]]; then
+		elif [[ "$1" == --* ]]; then # --hoge [fuga]
 			__opt="$1"
 			__arg="$2"
+			__should_shift_arg=true
+		elif [[ "$1" == -??* ]]; then # -abcdef...: first pass
+			__saved_arg="${1:1}"
+			continue
+		elif [[ "$1" == -? ]]; then # -a
+			__opt="$1"
+			__arg="$2"
+			__should_shift_arg=true
 		else
 			break
 		fi
+		echo -- ${__opt} ${__arg}
 		case "${__opt}" in
 			-M|--max-line)
 				test -z "${__arg}" && _die "'${__opt}' requires argument"
 				_max_line=$__arg
-				shift;;
+				__arg_consumed=true;;
 			-P|--print-always)
 				_print_always=true;;
 			-t|--timestamp)
@@ -59,7 +75,17 @@ function main() {
 				break # dead code
 		esac
 
-		shift
+		if [ -n "${__arg_consumed}" ]; then
+			# if arg is consumed and saved_arg is not null, saved_arg is arg
+			__saved_arg=''
+			if [ -n "$__should_shift_arg" ]; then
+				shift
+			fi
+		fi
+
+		if [ -z "$__saved_arg" ]; then
+			shift
+		fi
 	done
 
 	if [ -z "$1" ]; then
@@ -110,7 +136,7 @@ function main() {
 			cat <&7
 		fi
 		if [ -n "${_print_exitcode}" ]; then
-			msg="<$(basename "$0")> exit $errorcode"
+			msg="<$(basename "$1")> exit $errorcode"
 			if [ -n "${_print_timestamp}" ]; then
 				echo "[${SECONDS}] $msg"
 			else
