@@ -1,0 +1,21 @@
+[user]
+	email = snswinhaiku.lo@gmail.com
+	name = Turenar
+[push]
+	default = simple
+[color]
+	ui = auto
+[alias]
+	ci = commit
+	co = checkout
+	st = status
+	di = diff -M -C
+	dic = diff --cached -M -C
+	mff = merge --ff-only
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+	lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+
+[pager]
+	log = diff-highlight | less
+	show = diff-highlight | less
+	diff = diff-highlight | less
