@@ -24,7 +24,7 @@ function usage() {
   cat <<_EOM_ 1>&2
 同一ファイルをハードリンクしてディスク領域を空かせるシェルプログラム。
 使用は自己責任でお願いします。
-ver.6.4.1 (20121221)
+ver.6.5 (20140614)
 
 Usage:
   ${MYNAME} [options...]
@@ -42,7 +42,7 @@ Options:
 Details:
   サポートしていないファイル:
      1. ファイル名に空白が連続して入っている
-	 2. ファイル名に改行が入っているファイル名
+     2. ファイル名に改行が入っているファイル名
     これらのファイルを処理しようとするとエラーが発生したり、
     目的のファイルではないファイルが処理される可能性があります。
   サポートが怪しいファイル:
@@ -53,6 +53,9 @@ Details:
     予期せぬ動作をする可能性があります。
 
 ReleaseNote:
+  2014-06-14:
+    不必要なawkを呼び出さないように
+    --dry-runはリンクするファイルを表示するように
   2012-12-21:
     ヘルプの更新
   2012-03-12:
@@ -158,35 +161,35 @@ else
 fi
 
 if [ '(' ! -z "${CACHEMODE}" ')' -a '(' -e "${CACHEFILE}" ')' ]; then
-		echo -n "キャッシュを読み込んでいます..." >&2
-		STARTDATE=`date '+%s'`
-		sed -e "s/^/${NOCACHEHASH}  /" ${UNIQINODEF} > ${TEMPFILE}
-		cat ${CACHEFILE} ${TEMPFILE} | sed -e 's/  \.\//  /' | awk '{print $2$3$4$5$6$7$8$9,sprintf("%010g",NR),$0}' | LC_ALL=C sort \
-			| cut -d " " -f3-> ${HashCombinedFile}
-		# キャッシュに存在して実在しているファイルのハッシュ・ファイルリストの作成
-		uniq -d -s34 ${HashCombinedFile} > ${HASHF}
-		# キャッシュに存在しないか実在しないファイルのハッシュ・ファイルリストの作成
-		uniq -u -s34 ${HashCombinedFile} > ${TEMPFILE}2
-		
-		BUFIFS=$IFS
-		IFS=" "
-		touch ${HASHMAKEFILE}
-		exec 3< ${TEMPFILE}2
-		exec 4> ${HASHMAKEFILE}
-		while read uhash ufile 0<&3
-		do
-			if [ "${uhash}" = "${NOCACHEHASH}" ]; then
-				# 新しく登録されたファイル
-				echo ${ufile} >&4
-			#else
-				# 削除された（または動かされた）ファイルは何もしない
-			fi
-		done
-		exec 3<&-
-		exec 4>&-
-		ENDDATE=`date '+%s'`
-		calcdate ${STARTDATE} ${ENDDATE}
-		IFS=${BUFIFS}
+	echo -n "キャッシュを読み込んでいます..." >&2
+	STARTDATE=`date '+%s'`
+	sed -e "s/^/${NOCACHEHASH}  /" ${UNIQINODEF} > ${TEMPFILE}
+	cat ${CACHEFILE} ${TEMPFILE} | sed -e 's/  \.\//  /' \
+		| LC_ALL=C sort -r -k 2 -k 1 > ${HashCombinedFile}
+	# キャッシュに存在して実在しているファイルのハッシュ・ファイルリストの作成
+	uniq -d -s34 ${HashCombinedFile} > ${HASHF}
+	# キャッシュに存在しないか実在しないファイルのハッシュ・ファイルリストの作成
+	uniq -u -s34 ${HashCombinedFile} > ${TEMPFILE}2
+	
+	BUFIFS=$IFS
+	IFS=" "
+	touch ${HASHMAKEFILE}
+	exec 3< ${TEMPFILE}2
+	exec 4> ${HASHMAKEFILE}
+	while read uhash ufile 0<&3
+	do
+		if [ "${uhash}" = "${NOCACHEHASH}" ]; then
+			# 新しく登録されたファイル
+			echo ${ufile} >&4
+		#else
+			# 削除された（または動かされた）ファイルは何もしない
+		fi
+	done
+	exec 3<&-
+	exec 4>&-
+	ENDDATE=`date '+%s'`
+	calcdate ${STARTDATE} ${ENDDATE}
+	IFS=${BUFIFS}
 else
 	mv ${UNIQINODEF} ${HASHMAKEFILE}
 fi
@@ -210,50 +213,53 @@ ENDDATE=`date '+%s'`
 calcdate ${STARTDATE} ${ENDDATE}
 
 if [ ! -z "${DRYRUNMODE}" ]; then
-	echo "ハードリンクをスキップ" >&2
+	echo "同一ファイルをハードリンクしています... (dry-run)" >&2
 else
 	echo "同一ファイルをハードリンクしています..." >&2
+fi
 
+BUFIFS=$IFS
+IFS=" "
 
-	BUFIFS=$IFS
-	IFS=" "
+PROCFCOUNT=0
 
-	PROCFCOUNT=0
-
-	PREVFILE=
-	PREVHASH=
-	NOWFILE=
-	NOWHASH=
-	exec 3< ${HASHSORTF}
-	while read NOWHASH NOWFILE 0<&3
-	do
-		if [ "${NOWHASH}" = "${PREVHASH}" ]; then
-			diff "${NOWFILE}" "${PREVFILE}" > /dev/null
-			ISDIFF=$?
-			if [ ${ISDIFF} -eq 0 ]; then
-				let PROCFCOUNT="${PROCFCOUNT} + 1"
-				echo -ne "\r"
+PREVFILE=
+PREVHASH=
+NOWFILE=
+NOWHASH=
+exec 3< ${HASHSORTF}
+while read NOWHASH NOWFILE 0<&3
+do
+	if [ "${NOWHASH}" = "${PREVHASH}" ]; then
+		diff "${NOWFILE}" "${PREVFILE}" > /dev/null
+		ISDIFF=$?
+		if [ ${ISDIFF} -eq 0 ]; then
+			let PROCFCOUNT="${PROCFCOUNT} + 1"
+			echo -ne "\r"
+			if [ ! -z "${DRYRUNMODE}" ]; then
+				echo "link \"${PREVFILE}\" -> \"${NOWFILE}\""
+			else
 				ln -f "${PREVFILE}" "${NOWFILE}"
-				printf "%5d files processed. " ${PROCFCOUNT}
-				if [ ! -z "${DEBUGMODE}" ]; then			
+				if [ ! -z "${DEBUGMODE}" ]; then
 					echo "ln -f '${PREVFILE}' '${NOWFILE}'"
 				fi
-			elif [ ${ISDIFF} -eq 2 -o ${ISDIFF} -eq 1 ]; then
-				echo "different file: ${PREVFILE} ${NOWFILE}" >&2
-			else
-				echo "ERROR: diff returned ${ISDIFF}: diff '${PREVFILE}' '${NOWFILE}'" >&2
 			fi
+			printf "%5d files processed. " ${PROCFCOUNT}
+		elif [ ${ISDIFF} -eq 2 -o ${ISDIFF} -eq 1 ]; then
+			echo "different file: ${PREVFILE} ${NOWFILE}" >&2
+		else
+			echo "ERROR: diff returned ${ISDIFF}: diff '${PREVFILE}' '${NOWFILE}'" >&2
 		fi
-		PREVFILE=${NOWFILE}
-		PREVHASH=${NOWHASH}
-	done
-	exec 3<&-
+	fi
+	PREVFILE=${NOWFILE}
+	PREVHASH=${NOWHASH}
+done
+exec 3<&-
 
-	IFS=$BUFIFS
+IFS=$BUFIFS
 
-	ENDDATE=`date '+%s'`
-	calcdate ${STARTDATE} ${ENDDATE}
-fi
+ENDDATE=`date '+%s'`
+calcdate ${STARTDATE} ${ENDDATE}
 
 if [ ! -z "${CACHEMODE}" ]; then
 	cp ${HASHF} ${CACHEFILE}
