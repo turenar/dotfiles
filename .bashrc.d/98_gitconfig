@@ -1,0 +1,14 @@
+#!/bin/sh
+EMAIL_HOST=turenar.mydns.jp
+GIT_NAME=Turenar
+
+if test ! -e ~/.gitconfig.local; then
+	echo "Generating .gitconfig.local"
+	exec 5>~/.gitconfig.local
+	echo "[user]" >&5
+	echo "	email = $(hostname)@${EMAIL_HOST}" >&5
+	echo "	name = ${GIT_NAME}" >&5
+	exec 5>&-
+fi
+
+unset EMAIL_HOST GIT_NAME

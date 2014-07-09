@@ -1,5 +1,6 @@
+[include]
+	path = ~/.gitconfig.local
 [user]
-	name = Turenar
 	signingkey = 28A22BD8
 [push]
 	default = simple
