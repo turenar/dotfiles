@@ -1,6 +1,6 @@
 [user]
-	email = snswinhaiku.lo@gmail.com
 	name = Turenar
+	signingkey = 28A22BD8
 [push]
 	default = simple
 [color]
@@ -10,10 +10,10 @@
 	co = checkout
 	st = status
 	di = diff -M -C
+	dia = diff -M -C HEAD
 	dic = diff --cached -M -C
 	mff = merge --ff-only
-	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-	lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+	lga = log --all --decorate --graph --oneline
 
 [pager]
 	log = diff-highlight | less
