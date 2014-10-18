@@ -157,9 +157,17 @@ function main() {
 		fi
 	else
 		if [ -n "${_log_output}" ]; then
-			"$@" 2>&1 | tee -a "${_log_output}" >&8 &
+			if [ -v _max_line ]; then
+				"$@" 2>&1 | tee -a "${_log_output}" | head -n $(( ${_max_line} + 1 )) >&8 &
+			else
+				"$@" 2>&1 | tee -a "${_log_output}" >&8 &
+			fi
 		else
-			"$@" >&8 2>&1 &
+			if [ -v _max_line ]; then
+				"$@" 2>&1 | head -n $(( ${_max_line} + 1 )) >&8 &
+			else
+				"$@" >&8 2>&1 &
+			fi
 		fi
 		pid=$!
 	fi
@@ -169,6 +177,7 @@ function main() {
 	if [ -n "${_print_always}" -o ${errorcode} -ne 0 ]; then
 		if [ -v _max_line ]; then
 			head -n ${_max_line} <&7
+			# Check all output is read
 			if read -u7 ignore; then
 				msg=" <truncated output>"
 			fi
