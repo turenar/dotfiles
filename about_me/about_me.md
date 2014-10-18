@@ -25,9 +25,9 @@ Java, bash, PHPならある程度はいじれると思いますたぶん。Pytho
 ## VPS
 ConoHaのこのはちゃんが可愛くてつい。
 * Ubuntu 14.04 LTS
-* Memory 1GB Plan
+* Memory 2GB Plan
 
-[Jenkins](http://jenkins.turenar.mydns.jp)兼tinytinyrss兼Gentoo distfilesサーバー。役に立ってるかって言うと (言わない約束)
+[Jenkins](http://jenkins.turenar.mydns.jp)兼tinytinyrss兼Gentoo distfilesサーバー。~~役に立ってるかって言うと (言わない約束)~~ メモリ増強と共にエンコードサーバーになった。
 ## Vostro 1000 (2014/4退役)
 * Gentoo Linux amd64 + Windows Vista x32
 * Athlon 64 X2
