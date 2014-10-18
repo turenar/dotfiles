@@ -2,23 +2,28 @@
 # vim: ts=4:sw=4
 # This file is under public domain. You can do anything without any permissions.
 
-function print_help()
-{
+function usage() {
+	echo "usage: $0 [OPTION]... [--] <command> [<arg>...]"
+}
+
+function print_help() {
+	usage
 	cat <<EOF
-usage: $0 [OPTION]... [--] <command> [<arg>...]
 options:
   -P, --print-always      print even if command is succeeded
   -M, --max-lines N       print the first N lines instead of all;
                            with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line
   -E, --print-exitcode    print exit code at the end
-  -o, --output FILE       set output file instead of stdout. FILE will be truncated
-  -a, --append            append to file instead of truncate. use with '--output'
-  -L, --log-file FILE     output all logs into FILE no matter when with '--print-always'
-                           FILE will not be truncated.
-                           '--timestamp' don't affect to FILE. use '--output --append'
-      --check-requirement check required command (aka. awk) is installed and exit;
-                           no output if awk is installed. This option don't check
+  -o, --output FILE       set output file instead of stdout. FILE will be
+                           truncated.
+  -a, --append            append to file instead of truncate. use with
+                           '--output'
+  -L, --log-file FILE     output all logs into FILE. FILE will not be truncated.
+                           '--timestamp' don't affect to FILE.
+                           use '--output FILE --append'
+      --check-requirement check required command (aka. awk) is installed and
+                           exit; no output if succeeded. This option don't check
                            whether commands work as we expect.
   -h, --help              display this help and exit
 
@@ -106,7 +111,9 @@ function main() {
 	done
 
 	if [ -z "$1" ]; then
-		_die 'missing operand'
+		usage >&2
+		echo "Try '$(basename "$0") --help' for more information." >&2
+		exit 1
 	fi
 
 	# handle --output
