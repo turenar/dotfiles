@@ -191,6 +191,13 @@ function main() {
 
 function check_env(){
 	check_cmd awk
+	check_cmd date
+	[ "$(date +%s)" = "$(echo | awk '{ printf strftime("%s") }')" ] || echo "WARN: awk is not supported strftime?" >&2
+	check_cmd head
+	check_cmd mkfifo
+	check_cmd mktemp
+	check_cmd tee
+	check_cmd touch
 }
 
 function check_cmd() {
