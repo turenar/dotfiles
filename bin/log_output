@@ -10,7 +10,9 @@ function print_help() {
 	usage
 	cat <<EOF
 options:
-  -P, --print-always      print even if command is succeeded
+  -P, --print-always      print even if command is succeeded.
+                           This option don't affect buffering. All output is
+						   flushed after command is exited.
   -M, --max-lines N       print the first N lines instead of all;
                            with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line
@@ -132,28 +134,23 @@ function main() {
 	rm ${outfile}
 	# trap output if filter (aka. _print_timestamp) enabled
 	if [ -n "${_print_timestamp}" ]; then
-		if [ -n "${_log_output}" ]; then
-			infile="${_log_output}"
-			touch "${infile}" # ensure file exists
-			# ensure seek position
-			exec 9<${infile}
-			"$@" >>${infile} 2>&1 &
-		else
-			infile=$(mktemp -u)
-			mkfifo -m600 ${infile}
-			# ensure write opened
-			"$@" >>${infile} 2>&1 &
-			exec 9<${infile}
-		fi
+		infile=$(mktemp -u)
+		mkfifo -m600 ${infile}
+		# ensure write opened
+		"$@" >>${infile} 2>&1 &
+		exec 9<${infile}
+
 		pid=$!
-		[ -z "${_log_output}" ] && rm ${infile}
+		rm ${infile}
 
 		if [ -v _max_line ]; then
-			head -n $(( ${_max_line} + 1 )) <&9 | \
-				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' >&8
+			tee -a ${_log_output} <&9 | \
+				head -n $(( ${_max_line} + 1 )) | \
+				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0}' >&8
 			exec 9<&-
 		else
-			awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' <&9 >&8
+			tee -a ${_log_output} <&9 | \
+				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0}' >&8
 		fi
 	else
 		if [ -n "${_log_output}" ]; then
