@@ -148,8 +148,6 @@ function main() {
 		pid=$!
 		[ -z "${_log_output}" ] && rm ${infile}
 
-		SECONDS=$(date +%s)
-
 		if [ -v _max_line ]; then
 			head -n $(( ${_max_line} + 1 )) <&9 | \
 				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0 }' >&8
@@ -182,7 +180,7 @@ function main() {
 		fi
 		if [ -n "${msg}" ]; then
 			if [ -n "${_print_timestamp}" ]; then
-				echo "[${SECONDS}] [$(basename "$0"):${msg}]"
+				echo "[$(date +%s)] [$(basename "$0"):${msg}]"
 			else
 				echo "[$(basename "$0"):${msg}]"
 			fi
