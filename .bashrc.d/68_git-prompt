@@ -1,0 +1,9 @@
+#!/bin/sh
+if [[ "${OSTYPE}" == darwin* ]]; then
+	echo -n "Git Prompt Loading..."
+	source /usr/share/git-core/git-prompt.sh
+	echo "ok"
+	echo -n "Git Completion Loading..."
+	source /usr/share/git-core/git-completion.bash
+	echo "ok"
+fi

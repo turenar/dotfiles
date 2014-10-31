@@ -33,7 +33,7 @@ function fancyprompt {
 			DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 213)$(fgcolor 130)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\e[$[COLUMNS]D\]'
 			PS1="${DT}\\[$(bgcolor 190)$(fgcolor 202)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 202)\\]\h \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 220)\\]\${NEW_PWD}\\[$(resetcolor)\\]\n\\[$(fgcolor 81)\\]\$(__git_ps1 '(%s) ')\\[$(fgcolor 136)\\]\$ \\[$(resetcolor)\\]"
 		else
-			DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 55)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\e[$[COLUMNS]D\]'
+			DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 55)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\r\]'
 			PS1="${DT}\\[$(bgcolor 17)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]\h\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\]\n\\[$(fgcolor 41)\\]\$(__git_ps1 '(%s) ')\\[$(fgcolor 208)\\]\$ \\[$(resetcolor)\\]"
 		fi
 	fi

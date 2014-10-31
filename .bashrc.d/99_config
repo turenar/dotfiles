@@ -8,7 +8,12 @@ fi
 alias less='less -R'
 alias pemerge='sudo emerge --jobs=3 --load-average=2.3'
 alias rm='rm -i'
-alias ls='ls --color=auto'
+case "${OSTYPE}" in
+	darwin*)
+		alias ls='ls -G';;
+	linux*)
+		alias ls='ls --color=auto';;
+esac
 alias grep='grep --color=auto'
 alias sort='LC_ALL=C sort'
 alias by='byobu'
