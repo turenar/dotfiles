@@ -22,21 +22,12 @@ function smart_pwd {
 
 function fancyprompt {
 	PROMPT_COMMAND="smart_pwd"
-	if [ "${UID}" -eq 0 ]; then
-		if [ "${HOSTNAME}" = "sugaya" ]; then
-			PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor 201)$(fgcolor 190)"'$(LC_ALL=C date +"%a %b %2d %T")\e[$[COLUMNS]D'"$(resetcolor)\\]\\[$(bgcolor 201)$(fgcolor 190)\\]\u\\[$(fgcolor 136)\\]@\\[$(fgcolor 190)\\]\h\\[$(fgcolor 114)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 220)\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor 201)\\]\n(root)# \\[$(resetcolor)\\]"
-		else
-			PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor 197)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")\e[$[COLUMNS]D'"$(resetcolor)\\]\\[$(bgcolor 197)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]\h\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor 196)\\]\n(root)# \\[$(resetcolor)\\]"
-		fi
-	else
-		if [ "${HOSTNAME}" = "sugaya" ]; then
-			DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 213)$(fgcolor 130)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\e[$[COLUMNS]D\]'
-			PS1="${DT}\\[$(bgcolor 190)$(fgcolor 202)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 202)\\]\h \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 220)\\]\${NEW_PWD}\\[$(resetcolor)\\]\n\\[$(fgcolor 81)\\]\$(__git_ps1 '(%s) ')\\[$(fgcolor 136)\\]\$ \\[$(resetcolor)\\]"
-		else
-			DT='\[\e[$[COLUMNS-19]C'"$(bgcolor 55)$(fgcolor 220)"'$(LC_ALL=C date +"%a %b %2d %T")'"$(resetcolor)"'\r\]'
-			PS1="${DT}\\[$(bgcolor 17)$(fgcolor 117)\\]\u\\[$(fgcolor 114)\\]@\\[$(fgcolor 117)\\]\h\\[$(fgcolor 190)\\] \\[$(bgcolor 232)$(fgcolor 201)\\]\${NEW_PWD_TRUNC}\\[$(fgcolor 86)\\]\${NEW_PWD}\\[$(resetcolor)\\]\n\\[$(fgcolor 41)\\]\$(__git_ps1 '(%s) ')\\[$(fgcolor 208)\\]\$ \\[$(resetcolor)\\]"
-		fi
+
+	theme_${ps1_theme}
+	if [ ! \( -v TIME_BG -a -v TIME_FG -a -v USERNAME_BG -a -v USERNAME_FG -a -v ATMARK_FG -a -v PWD_BG -a -v PWD_TRUNKMARK_FG -a -v PWD_FG -a -v EXTRA_FG -a -v EXTRA_TXT -a -v DOLLAR_FG \) ]; then
+		echo "Theme seems to be partially defined" >&2
 	fi
+	PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'$(LC_ALL=C date +"%a %b %2d %T")\r'"$(resetcolor)\\]\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\h \\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${NEW_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor ${EXTRA_FG})\\]\n${EXTRA_TXT}\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
 }
 
 function dullprompt {

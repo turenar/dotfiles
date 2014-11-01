@@ -1,0 +1,28 @@
+#!/bin/sh
+function theme_blue() {
+	if [ "${UID}" -eq 0 ]; then
+		TIME_BG=197
+		TIME_FG=220
+		USERNAME_BG=197
+		USERNAME_FG=117
+		ATMARK_FG=114
+		PWD_BG=232
+		PWD_TRUNKMARK_FG=201
+		PWD_FG=86
+		EXTRA_FG=196
+		EXTRA_TXT='(root)'
+		DOLLAR_FG=196
+	else
+		TIME_BG=55
+		TIME_FG=220
+		USERNAME_BG=17
+		USERNAME_FG=117
+		ATMARK_FG=114
+		PWD_BG=232
+		PWD_TRUNKMARK_FG=201
+		PWD_FG=86
+		EXTRA_FG=41
+		EXTRA_TXT='$(__git_ps1 "(%s)")'
+		DOLLAR_FG=208
+	fi
+}

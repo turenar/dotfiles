@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [[ "${OSTYPE}" = darwin* ]]; then
+	ps1_theme=green
+elif [ "${HOSTNAME}" = "sugaya" ]; then
+	ps1_theme=yellow
+else
+	ps1_theme=blue
+fi
+
+_debug "PS1 Theme is ${ps1_theme}"
+
