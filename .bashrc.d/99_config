@@ -45,3 +45,5 @@ shopt -s no_empty_cmd_completion
 
 stty kill undef
 stty stop undef
+
+export GPG_TTY=`tty`
