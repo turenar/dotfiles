@@ -5,7 +5,7 @@ endif
 
 nnoremap <ESC><ESC> :nohlsearch<CR>
 
-call neobundle#rc(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
 NeoBundleFetch 'Shougo/neobundle.vim'
@@ -46,6 +46,8 @@ if !exists('g:neocomplete#keyword_patterns')
   let g:neocomplete#keyword_patterns = {}
 endif
 let g:neocomplete#keyword_patterns['default'] = '¥h¥w*'
+
+call neobundle#end()
 " Plugin key-mappings.
 inoremap <expr><C-g>  neocomplete#undo_completion()
 inoremap <expr><C-l>  neocomplete#complete_common_string()
