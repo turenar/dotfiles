@@ -24,7 +24,7 @@ function fancyprompt {
 	PROMPT_COMMAND="smart_pwd"
 
 	theme_${ps1_theme}
-	PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'$(LC_ALL=C date +"%a %b %2d %T")\r'"$(resetcolor)\\]\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\h \\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${NEW_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor ${EXTRA_FG})\\]\n${EXTRA_TXT}\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
+	PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'$(LC_ALL=C date +"%a %b %d %T")\r'"$(resetcolor)\\]\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\h \\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${NEW_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor ${EXTRA_FG})\\]\n${EXTRA_TXT}\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
 }
 
 function dullprompt {
