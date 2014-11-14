@@ -10,20 +10,52 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 " Let NeoBundle manage NeoBundle
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-NeoBundle 'Shougo/vimproc.vim', { 'build' : { 'unix' : 'make -f make_unix.mak' } }
-NeoBundle "Shougo/neocomplete.vim"
+let OSTYPE = system('uname')
+
+if OSTYPE == "Darwin\n"
+	NeoBundle "Shougo/neocomplcache.vim"
+	" Ruby向けにendを自動挿入してくれる
+	NeoBundle 'tpope/vim-endwise'
+elseif OSTYPE == "Linux\n"
+	" コマンドラインに使われる画面上の行数
+	set cmdheight=2
+	" エディタウィンドウの末尾から2行目にステータスラインを常時表示させる
+	set laststatus=2
+	" ステータス行に表示させる情報の指定(どこからかコピペしたので細かい意味はわかっていない)
+	set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
+	" ステータス行に現在のgitブランチを表示する
+set statusline+=%{fugitive#statusline()}
+	NeoBundle 'Shougo/vimproc.vim', { 'build' : { 'unix' : 'make -f make_unix.mak' } }
+	NeoBundle "Shougo/neocomplete.vim"
+endif
+" ファイルオープンを便利に
+NeoBundle 'Shougo/unite.vim'
+" Unite.vimで最近使ったファイルを表示できるようにする
+NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'vim-scripts/javacomplete'
 NeoBundle 'osyo-manga/vim-over'
 "NeoBundle 'soramugi/auto-ctags.vim'
+NeoBundle "tyru/caw.vim"
+" インデントに色を付けて見やすくする
+NeoBundle 'nathanaelkane/vim-indent-guides'
+" 行末の半角スペースを可視化
+NeoBundle 'bronson/vim-trailing-whitespace'
 
+" Gitを便利に使う
+NeoBundle 'tpope/vim-fugitive'
+
+" grep検索の実行後にQuickFix Listを表示する
+autocmd QuickFixCmdPost *grep* cwindow
+
+" ステータス行に現在のgitブランチを表示する
+set statusline+=%{fugitive#statusline()}
 
 syntax on
 filetype on
 filetype plugin indent on   " Required!
 
-:let java_highlight_all=1
 
 NeoBundleCheck
 
@@ -31,6 +63,7 @@ NeoBundleCheck
 " ...(NeoBundleとneocomplete以外の設定は省略)...
 
 
+:let java_highlight_all=1
 "==========================================
 "neocomplete.vim
 "==========================================
@@ -82,10 +115,22 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 " For snippet_complete marker.
 if has('conceal')
   set conceallevel=2 concealcursor=i
-endif 
+endif
 
 
 
 "" auto-ctags.vim {{{
 let g:auto_ctags = 0
 "" }}}
+
+" カーソルが何行目の何列目に置かれているかを表示する
+set ruler
+" ウインドウのタイトルバーにファイルのパス情報等を表示する
+set title
+" コマンドラインモードで<Tab>キーによるファイル名補完を有効にする
+set wildmenu
+" 入力中のコマンドを表示する
+set showcmd
+
+" vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
+let g:indent_guides_enable_on_vim_startup = 1
