@@ -1,0 +1,5 @@
+#!/bin/sh
+function kcompile() {
+	test -d /var/tmp/portage/.distcc || mkdir /var/tmp/portage/.distcc
+	DISTCC_DIR=/var/tmp/portage/.distcc make CC='distcc gcc' -j16 "$@"
+}
