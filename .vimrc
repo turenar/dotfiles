@@ -1,5 +1,5 @@
 if has('vim_starting')
-  set nocompatible               " Be iMproved
+"set nocompatible               " Be iMproved
   set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
@@ -18,13 +18,13 @@ if OSTYPE == "Darwin\n"
 	NeoBundle 'tpope/vim-endwise'
 elseif OSTYPE == "Linux\n"
 	" コマンドラインに使われる画面上の行数
-	set cmdheight=2
+	set cmdheight=1
 	" エディタウィンドウの末尾から2行目にステータスラインを常時表示させる
 	set laststatus=2
 	" ステータス行に表示させる情報の指定(どこからかコピペしたので細かい意味はわかっていない)
 	set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
 	" ステータス行に現在のgitブランチを表示する
-set statusline+=%{fugitive#statusline()}
+	"set statusline+=%{fugitive#statusline()}
 	NeoBundle 'Shougo/vimproc.vim', { 'build' : { 'unix' : 'make -f make_unix.mak' } }
 	NeoBundle "Shougo/neocomplete.vim"
 endif
@@ -45,12 +45,18 @@ NeoBundle 'bronson/vim-trailing-whitespace'
 
 " Gitを便利に使う
 NeoBundle 'tpope/vim-fugitive'
+" ColorScheme
+NeoBundle 'tomasr/molokai'
+" SpellChecker
+NeoBundle 'rhysd/vim-grammarous'
+" for editing commit message
+NeoBundle 'rhysd/committia.vim'
 
 " grep検索の実行後にQuickFix Listを表示する
 autocmd QuickFixCmdPost *grep* cwindow
 
 " ステータス行に現在のgitブランチを表示する
-set statusline+=%{fugitive#statusline()}
+"set statusline+=%{fugitive#statusline()}
 
 syntax on
 filetype on
@@ -131,6 +137,14 @@ set title
 set wildmenu
 " 入力中のコマンドを表示する
 set showcmd
+set display=lastline
 
 " vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
 let g:indent_guides_enable_on_vim_startup = 1
+"let g:indent_guides_guide_size=1
+
+nmap <Leader>c <Plug>(caw:i:toggle)
+vmap <Leader>c <Plug>(caw:i:toggle)
+
+set fileencodings=utf-8,iso-2022-jp,cp932,sjis,euc-jp,default
+colorscheme molokai
