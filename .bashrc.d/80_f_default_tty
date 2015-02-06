@@ -1,0 +1,7 @@
+#!/bin/sh
+
+__stty_default_config="$(stty -g)"
+
+default_tty (){
+	stty ${__stty_default_config}
+}
