@@ -9,13 +9,19 @@
 [alias]
 	ci = commit
 	co = checkout
-	st = status
+	cp = cherry-pick
+	cpa = cherry-pick --abort
+	cpi = cherry-pick -x
 	di = diff -M -C
 	dia = diff -M -C HEAD
 	dic = diff --cached -M -C
-	mff = merge --ff-only
+	f = fetch
 	lga = log --all --decorate --graph --oneline
-	cpi = cherry-pick -x
+	m = merge --no-ff
+	mff = merge --ff-only
+	p = pull --rebase
+	st = status
+
 
 [pager]
 	log = diff-highlight | less
