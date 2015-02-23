@@ -6,7 +6,11 @@ function smart_pwd {
 	local dir=${PWD##*/}
 	local tmp=""
 	pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
-	NEW_PWD="${PWD/#$HOME/~}"
+	if [[ $PWD == $HOME/* ]]; then
+		NEW_PWD="~/${PWD#${HOME}/}"
+	else
+		NEW_PWD="$PWD"
+	fi
 	NEW_PWD_TRUNC=""
 	local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
 	if [ ${pwdoffset} -gt "0" ]
@@ -24,7 +28,7 @@ function fancyprompt {
 	PROMPT_COMMAND="smart_pwd"
 
 	theme_${ps1_theme}
-	PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'$(LC_ALL=C date +"%a %b %d %T")\r'"$(resetcolor)\\]\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\h \\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${NEW_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor ${EXTRA_FG})\\]\n${EXTRA_TXT}\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
+	PS1='\[\e[$[COLUMNS-19]C'"$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'\D{%a %b %d %T}\r'"$(resetcolor)\\]\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\h \\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${NEW_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${NEW_PWD}\\[$(resetcolor)\\] \\[$(fgcolor ${EXTRA_FG})\\]\n${EXTRA_TXT}\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
 }
 
 function dullprompt {
