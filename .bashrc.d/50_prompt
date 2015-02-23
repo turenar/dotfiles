@@ -6,8 +6,8 @@ function smart_pwd {
 	local dir=${PWD##*/}
 	local tmp=""
 	pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
-	if [[ $PWD == $HOME/* ]]; then
-		NEW_PWD="~/${PWD#${HOME}/}"
+	if [[ $PWD == $HOME* ]]; then
+		NEW_PWD="~${PWD#${HOME}}"
 	else
 		NEW_PWD="$PWD"
 	fi
