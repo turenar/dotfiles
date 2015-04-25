@@ -11,6 +11,9 @@ function smart_pwd {
 	else
 		NEW_PWD="$PWD"
 	fi
+	# set title
+	printf "\033]0;%s\007" "${USER}@${HOSTNAME}: ${NEW_PWD}"
+
 	NEW_PWD_TRUNC=""
 	local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
 	if [ ${pwdoffset} -gt "0" ]
