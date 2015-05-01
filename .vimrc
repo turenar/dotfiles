@@ -52,6 +52,8 @@ NeoBundle 'rhysd/vim-grammarous'
 " for editing commit message
 NeoBundle 'rhysd/committia.vim'
 
+NeoBundle 'justmao945/vim-clang'
+
 " grep検索の実行後にQuickFix Listを表示する
 autocmd QuickFixCmdPost *grep* cwindow
 
