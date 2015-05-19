@@ -22,7 +22,7 @@ function theme_green() {
 		PWD_TRUNKMARK_FG=106
 		PWD_FG=119
 		EXTRA_FG=142
-		EXTRA_TXT='$(__git_ps1 "(%s)")'
+		EXTRA_TXT='$(__git_ps1_brief "(%s)")'
 		DOLLAR_FG=45
 	fi
 }

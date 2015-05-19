@@ -1,12 +1,15 @@
 #!/bin/sh
-EMAIL_HOST=turenar.mydns.jp
+EMAIL_HOST=turenar.xyz
 GIT_NAME=Turenar
+
+GIT_PS1_BRANCH_LENGTH=25
+GIT_PS1_SHOWUPSTREAM=yes
 
 if test ! -e ~/.gitconfig.local; then
 	echo "Generating .gitconfig.local"
 	exec 5>~/.gitconfig.local
 	echo "[user]" >&5
-	echo "	email = $(hostname)@${EMAIL_HOST}" >&5
+	echo "	email = $(whoami)@${EMAIL_HOST}" >&5
 	echo "	name = ${GIT_NAME}" >&5
 	exec 5>&-
 fi

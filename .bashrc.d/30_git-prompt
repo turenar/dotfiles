@@ -1,0 +1,150 @@
+#!/bin/sh
+if [[ "${OSTYPE}" == darwin* ]]; then
+	#_debug -n "Git Prompt Loading..."
+	#source /usr/share/git-core/git-prompt.sh
+	#_debug "ok"
+	_debug -n "Git Completion Loading..."
+	source /usr/share/git-core/git-completion.bash
+	_debug "ok"
+fi
+
+
+
+function __eread() {
+	file="$1"
+	shift
+	test -r "${file}" && read "$@" < "${file}"
+}
+
+function __git_ps1_brief() {
+	local printf_format="${1:-(%s)}"
+
+	type git >/dev/null 2>&1 || return
+
+	local repo_info="$(git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --short HEAD 2>/dev/null)"
+	if test $? -ne 0; then return; fi
+	local short_sha="${repo_info##*$'\n'}"
+	repo_info="${repo_info%$'\n'*}"
+	local inside_worktree="${repo_info##*$'\n'}"
+	repo_info="${repo_info%$'\n'*}"
+	local bare_repo="${repo_info##*$'\n'}"
+	repo_info="${repo_info%$'\n'*}"
+	local inside_gitdir="${repo_info##*$'\n'}"
+	local git_dir="${repo_info%$'\n'*}"
+
+	local branch=""
+	local status=""
+	local step=""
+	local total=""
+	local detached=""
+
+	if [ -d "${git_dir}/rebase-merge" ]; then
+		__eread "${git_dir}/rebase-merge/head-name" branch
+		__eread "${git_dir}/rebase-merge/msgnum" step
+		__eread "${git_dir}/rebase-merge/end" total
+		if [ -f "${git_dir}/rebase-merge/interactive" ]; then
+			status="|REBASE-i"
+		else
+			status="|REBASE-m"
+		fi
+	else
+		if [ -d "${git_dir}/rebase-apply" ]; then
+			__eread "${git_dir}/rebase-apply/next" step
+			__eread "${git_dir}/rebase-apply/last" total
+			if [ -f "${git_dir}/rebase-apply/rebasing" ]; then
+				__eread "${git_dir}/rebase-apply/headname" b
+				status="|REBASE"
+			elif [ -f "${git_dir}/rebase-apply/applying" ]; then
+				status="|AM"
+			else
+				status="|AM/REBASE"
+			fi
+		elif [ -f "${git_dir}/MERGE_HEAD" ]; then
+			status="|MERGING"
+		elif [ -f "${git_dir}/CHERRY_PICK_HEAD" ]; then
+			status="|CHERRY-PICKING"
+		elif [ -f "${git_dir}/REVERT_HEAD" ]; then
+			status="|REVERTING"
+		elif [ -f "${git_dir}/BISECT_LOG" ]; then
+			status="|BISECTING"
+		fi
+
+		if [ -n "$branch" ]; then
+			:
+		elif [ -h "${git_dir}/HEAD" ]; then
+			# symlink symbolic ref
+			branch="$(git symbolic-ref HEAD 2>/dev/null)"
+		else
+			local head=""
+			if ! __eread "${git_dir}/HEAD" head; then
+				return
+			fi
+			branch="${head#ref: }"
+			if [ "${head}" = "${branch}" ]; then
+				detached=yes
+				branch="$(
+					case "${GIT_PS1_DESCRIBE_STYLE-}" in
+					(contains)
+						git describe --contains HEAD ;;
+					(branch)
+						git describe --contains --all HEAD ;;
+					(describe)
+						git describe HEAD ;;
+					(* | default)
+						git describe --tags --exact-match HEAD ;;
+					esac 2>/dev/null)" || branch="${short_sha}.."
+			fi
+		fi
+	fi
+
+	if [ -n "${step}" ] && [ -n "${total}" ]; then
+		status="${status} ${step}/${total}"
+	fi
+
+	branch="${branch##refs/heads/}"
+	if [ -n "${GIT_PS1_BRANCH_LENGTH}" -a "${#branch}" -gt "${GIT_PS1_BRANCH_LENGTH}" ]; then
+		branch="$(printf "%.$((${GIT_PS1_BRANCH_LENGTH} - 2))s.." "${branch}")"
+	fi
+
+	if [ "$detached" = "yes" ]; then
+		branch="($branch)"
+	fi
+
+	local prefix=''
+	local stash_state=''
+	if [ "${inside_gitdir}" = "true" ]; then
+		if [ "${bare_repo}" = "true" ]; then
+			prefix='BARE:'
+		else
+			branch='GIT_DIR!'
+		fi
+	elif [ "${inside_worktree}" = "true" ]; then
+		if [ -n "${GIT_PS1_SHOWSTASHSTATE-}" ] && [ -r "${git_dir}/refs/stash" ]; then
+			stash_state='$'
+		fi
+	fi
+
+	if [ -n "${GIT_PS1_SHOWUPSTREAM-}" ]; then
+		case "$(git rev-list --count --left-right "@{upstream}"...HEAD 2>/dev/null)" in
+			"") # no upstream
+				if [ -n "$detached" ]; then
+					upstream_state=""
+				else
+					upstream_state="?"
+				fi;;
+			"0	0")
+				upstream_state="=";;
+			"0	"*)
+				upstream_state=">";;
+			*"	0")
+				upstream_state="<";;
+			*)
+				upstream_state="<>";;
+		esac
+	fi
+
+	local state="${stash_state}"
+	local gitstring="${prefix}${branch}${state}${status}${upstream_state}"
+
+	printf -- "${printf_format}" "${gitstring}"
+}
