@@ -141,6 +141,9 @@ set wildmenu
 set showcmd
 set display=lastline
 
+let g:clang_c_options = '-std=gnu11'
+let g:clang_cpp_options = '-std=c++11 -stdlib=libc++'
+
 " vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
 let g:indent_guides_enable_on_vim_startup = 1
 "let g:indent_guides_guide_size=1
