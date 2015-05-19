@@ -3,7 +3,7 @@
 # This file is under public domain. You can do anything without any permissions.
 
 function usage() {
-	echo "usage: $0 [OPTION]... [--] <command> [<arg>...]"
+	echo "usage: $0 [OPTION...] [--] <command> [<arg>...]"
 }
 
 function print_help() {
@@ -12,7 +12,7 @@ function print_help() {
 options:
   -P, --print-always      print even if command is succeeded.
                            This option don't affect buffering. All output is
-						   flushed after command is exited.
+                           flushed after command is exited.
   -M, --max-lines N       print the first N lines instead of all;
                            with the leading '-', print all but the last N lines.
   -t, --timestamp         print timestamp each line
@@ -145,7 +145,7 @@ function main() {
 
 		if [ -v _max_line ]; then
 			tee -a ${_log_output} <&9 | \
-				head -n $(( ${_max_line} + 1 )) | \
+				awk "1,$(( ${_max_line} + 1 )) { print }" | \
 				awk '{ m = strftime("%s") ; printf "[%s] %s\n", m, $0}' >&8
 			exec 9<&-
 		else
@@ -155,7 +155,7 @@ function main() {
 	else
 		if [ -n "${_log_output}" ]; then
 			if [ -v _max_line ]; then
-				"$@" 2>&1 | tee -a "${_log_output}" | head -n $(( ${_max_line} + 1 )) >&8 &
+				"$@" 2>&1 | tee -a "${_log_output}" | awk "1,$(( ${_max_line} + 1 )) { print }" >&8 &
 			else
 				"$@" 2>&1 | tee -a "${_log_output}" >&8 &
 			fi
@@ -191,6 +191,7 @@ function main() {
 				echo "[$(basename "$0"):${msg}]"
 			fi
 		fi
+
 	fi
 	exit ${errorcode}
 }
