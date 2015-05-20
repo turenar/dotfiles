@@ -1,6 +1,6 @@
 #!/bin/sh
 if [[ $- = *i* ]]; then
-	if [ -z "$1" ];then
+	if [ -n "$1" ];then
 		dir=$1
 	else
 		dir=${HOME}/.bashrc.d

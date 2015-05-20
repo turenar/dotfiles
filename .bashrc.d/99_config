@@ -7,6 +7,7 @@ else
 fi
 export LC_TIME="en_US.UTF-8"
 
+alias ls='ls --color=auto'
 alias less='less -R'
 alias pemerge='sudo emerge --jobs=3 --load-average=2.3'
 alias rm='rm -i'
