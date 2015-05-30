@@ -4,6 +4,7 @@ GIT_NAME=Turenar
 
 GIT_PS1_BRANCH_LENGTH=25
 GIT_PS1_SHOWUPSTREAM=yes
+GIT_PS1_SHOWSTASHSTATE=yes
 
 if test ! -e ~/.gitconfig.local; then
 	echo "Generating .gitconfig.local"

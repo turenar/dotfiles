@@ -1,0 +1,4 @@
+#!/bin/sh
+
+EXTRA_TXT_USER='$(__git_ps1_brief "(%s)")'
+EXTRA_TXT_ROOT='(root$(__git_ps1_brief ":\[$(fgcolor ${GIT_PS1_COLOR})\]%s\[$(fgcolor ${EXTRA_FG})\]"))'

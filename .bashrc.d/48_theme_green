@@ -1,4 +1,6 @@
 #!/bin/sh
+GIT_PS1_COLOR=142
+
 function theme_green() {
 	if [ "${UID}" -eq 0 ]; then
 		TIME_BG=157
@@ -10,7 +12,7 @@ function theme_green() {
 		PWD_TRUNKMARK_FG=106
 		PWD_FG=208
 		EXTRA_FG='196'
-		EXTRA_TXT='(root)'
+		EXTRA_TXT="${EXTRA_TXT_ROOT}"
 		DOLLAR_FG='196'
 	else
 		TIME_BG=157
@@ -21,8 +23,8 @@ function theme_green() {
 		PWD_BG=22
 		PWD_TRUNKMARK_FG=106
 		PWD_FG=119
-		EXTRA_FG=142
-		EXTRA_TXT='$(__git_ps1_brief "(%s)")'
+		EXTRA_FG=${GIT_PS1_COLOR}
+		EXTRA_TXT="${EXTRA_TXT_USER}"
 		DOLLAR_FG=45
 	fi
 }
