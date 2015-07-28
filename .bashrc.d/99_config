@@ -25,7 +25,6 @@ export PATH="${HOME}/bin:${PATH}:/sbin:/usr/sbin"
 export PAGER='/usr/bin/less -R'
 export EDITOR='/usr/bin/vim'
 #export MAIL='.maildir/'
-# 履歴のサイズ。新山の場合はこれで半年ぐらい前のやつまで残る。 
 export HISTSIZE=30000
 export HISTFILESIZE=400000
 export HISTCONTROL='ignoreboth'
@@ -33,11 +32,11 @@ export HISTIGNORE="fg*:bg*:history*"
 
 
 # 履歴ファイルを上書きではなく追加する。
-# 複数のホストで同時にログインすることがあるので、上書きすると危険だ。 
-shopt -s histappend 
-# "!"をつかって履歴上のコマンドを実行するとき、 
-# 実行するまえに必ず展開結果を確認できるようにする。 
-shopt -s histverify 
+# 複数のホストで同時にログインすることがあるので、上書きすると危険だ。
+shopt -s histappend
+# "!"をつかって履歴上のコマンドを実行するとき、
+# 実行するまえに必ず展開結果を確認できるようにする。
+shopt -s histverify
 # 履歴の置換に失敗したときやり直せるようにする。
 shopt -s histreedit
 # 端末の画面サイズを自動認識。

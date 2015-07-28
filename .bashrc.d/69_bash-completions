@@ -3,8 +3,6 @@
 
 source /etc/profile.d/bash-completion.sh
 
-# for git_prompt
-source /usr/share/git/git-prompt.sh
 
 #for i in ${HOME}/.bash_completion.d/*; do
 #	source $i 
