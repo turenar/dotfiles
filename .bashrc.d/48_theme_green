@@ -13,7 +13,7 @@ function theme_green() {
 		PWD_FG=208
 		EXTRA_FG='196'
 		EXTRA_TXT="${EXTRA_TXT_ROOT}"
-		DOLLAR_FG='196'
+		DOLLAR_FG=196
 	else
 		TIME_BG=157
 		TIME_FG=22
@@ -25,6 +25,6 @@ function theme_green() {
 		PWD_FG=119
 		EXTRA_FG=${GIT_PS1_COLOR}
 		EXTRA_TXT="${EXTRA_TXT_USER}"
-		DOLLAR_FG=45
+		DOLLAR_FG=142
 	fi
 }
