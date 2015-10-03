@@ -9,6 +9,7 @@
 [alias]
 	ci = commit
 	co = checkout
+	cot = checkout --track
 	cp = cherry-pick
 	cpa = cherry-pick --abort
 	cpi = cherry-pick -x
@@ -17,6 +18,7 @@
 	dic = diff --cached -M -C
 	f = fetch
 	lga = log --all --decorate --graph --oneline
+	lgp = log --patch-with-stat
 	m = merge --no-ff
 	mff = merge --ff-only
 	p = pull --rebase
