@@ -1,12 +1,18 @@
 #!/bin/sh
-if [[ $- = *i* ]]; then
-	if [ -n "$1" ];then
-		dir=$1
-	else
-		dir=${HOME}/.bashrc.d
-	fi
 
-	for i in ${dir}/*_*; do
+function __turenar_bashrc_set_rcpath() {
+	if [ -n "$1" ];then
+		__turenar_bashrc_rcpath="$1"
+	else
+		__turenar_bashrc_rcpath="$(dirname "$0")"
+	fi
+}
+
+function __turenar_bashrc_loader() {
+	local dir i
+
+	for dir in ${__turenar_bashrc_rcpath}; do
+		for i in "${dir}"/*_*; do
 		if ! test -x "$i"; then
 			printf "\033[KLoading %s..." "$i"
 			if source "$i"; then
@@ -18,4 +24,9 @@ if [[ $- = *i* ]]; then
 	done
 
 	printf "\033[K.bashrc loaded"
+}
+
+if [[ $- = *i* ]]; then
+	__turenar_bashrc_set_rcpath "$@"
+	__turenar_bashrc_loader "$@"
 fi
