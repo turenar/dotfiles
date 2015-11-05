@@ -1,28 +1,30 @@
 #!/bin/sh
 
 function smart_pwd {
+	# Orignal code should be http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x783.html
+	# but i can't determine whether this really is it because time passed.
 	local pwdmaxlen=$(( $COLUMNS-35 ))
 	local trunc_symbol=".."
 	local dir=${PWD##*/}
 	local tmp=""
 	pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
 	if [[ $PWD == $HOME* ]]; then
-		NEW_PWD="~${PWD#${HOME}}"
+		SMART_PWD="~${PWD#${HOME}}"
 	else
-		NEW_PWD="$PWD"
+		SMART_PWD="$PWD"
 	fi
 	# set title
-	printf "\033]0;%s\007" "${USER}@${HOSTNAME}: ${NEW_PWD}"
+	printf "\033]0;%s\007" "${USER}@${HOSTNAME}: ${SMART_PWD}"
 
-	NEW_PWD_TRUNC=""
-	local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
+	SMART_PWD_TRUNC=""
+	local pwdoffset=$(( ${#SMART_PWD} - pwdmaxlen ))
 	if [ ${pwdoffset} -gt "0" ]
 	then
-		tmp=${NEW_PWD:$pwdoffset:$pwdmaxlen}
+		tmp=${SMART_PWD:$pwdoffset:$pwdmaxlen}
 		tmp=${trunc_symbol}/${tmp#*/}
-		if [ "${#tmp}" -lt "${#NEW_PWD}" ]; then
-			NEW_PWD_TRUNC="${trunc_symbol}"
-			NEW_PWD="${tmp:${#trunc_symbol}}"
+		if [ "${#tmp}" -lt "${#SMART_PWD}" ]; then
+			SMART_PWD_TRUNC="${trunc_symbol}"
+			SMART_PWD="${tmp:${#trunc_symbol}}"
 		fi
 	fi
 }
@@ -33,7 +35,7 @@ function fancyprompt {
 	theme_${ps1_theme}
 	local timeps='\[\e[$[COLUMNS-19]C\]'"\\[$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'\D{%a %b %d %T}\r'"$(resetcolor)\\]"
 	local uahps="\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\\h"
-	local pwdps="\\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${NEW_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${NEW_PWD}\\[$(resetcolor)\\]"
+	local pwdps="\\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${SMART_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${SMART_PWD}\\[$(resetcolor)\\]"
 	local extraps="\\[$(fgcolor ${EXTRA_FG})\\]${EXTRA_TXT}"
 	local dollerps="\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
 	PS1="${timeps}${uahps} ${pwdps}\n${extraps}${dollerps}"
