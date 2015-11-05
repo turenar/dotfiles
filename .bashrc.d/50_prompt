@@ -27,10 +27,12 @@ function smart_pwd {
 			SMART_PWD="${tmp:${#trunc_symbol}}"
 		fi
 	fi
+
+	test x"$*" = x || "$@"
 }
 
 function fancyprompt {
-	PROMPT_COMMAND="smart_pwd"
+	PROMPT_COMMAND="smart_pwd ${PROMPT_COMMAND//smart_pwd /}"
 
 	theme_${ps1_theme}
 	local timeps='\[\e[$[COLUMNS-19]C\]'"\\[$(bgcolor ${TIME_BG})$(fgcolor ${TIME_FG})"'\D{%a %b %d %T}\r'"$(resetcolor)\\]"
