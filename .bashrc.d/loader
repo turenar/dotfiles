@@ -7,6 +7,15 @@ if [[ $- = *i* ]]; then
 	fi
 
 	for i in ${dir}/*_*; do
-		source $i
+		if ! test -x "$i"; then
+			printf "\033[KLoading %s..." "$i"
+			if source "$i"; then
+				printf " ok.\r"
+			else
+				echo " failed."
+			fi
+		fi
 	done
+
+	printf "\033[K.bashrc loaded"
 fi
