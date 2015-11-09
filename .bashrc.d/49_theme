@@ -9,5 +9,3 @@ if [ -z "${ps1_theme}" ]; then
 		ps1_theme=blue
 	fi
 fi
-_debug "PS1 Theme is ${ps1_theme}"
-

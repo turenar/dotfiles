@@ -6,8 +6,3 @@ case $TERM in
 		unset DISPLAY
 		TERM=screen-256color;;
 esac
-
-case $HOSTNAME in
-	ci*)
-		_DEBUG=y;;
-esac

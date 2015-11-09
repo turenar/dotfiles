@@ -1,5 +1,0 @@
-#!/bin/sh
-
-function _debug(){
-	test "${_DEBUG}" = y && echo $@
-}
