@@ -1,9 +1,5 @@
 #!/bin/sh
-[[ -f /etc/profile.d/bash-completion.sh ]] || return
 
-source /etc/profile.d/bash-completion.sh
+[[ -f /etc/profile.d/bash-completion.sh ]] && source /etc/profile.d/bash-completion.sh
 
-
-#for i in ${HOME}/.bash_completion.d/*; do
-#	source $i 
-#done
+: make exit code success
