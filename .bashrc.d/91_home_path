@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ -d "${HOME}/install" ]; then
+	PATH="${HOME}/install/bin:${PATH}"
+	LD_LIBRARY_PATH="${HOME}/install/lib"
+elif [ -d "${HOME}/bin" ]; then
+	PATH="${HOME}/bin:${PATH}"
+	LD_LIBRARY_PATH="${HOME}/lib"
+fi
