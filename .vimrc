@@ -25,11 +25,19 @@ elseif OSTYPE == "Linux\n"
 	set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
 	" ステータス行に現在のgitブランチを表示する
 	"set statusline+=%{fugitive#statusline()}
-	NeoBundle 'Shougo/vimproc.vim', { 'build' : { 'unix' : 'make -f make_unix.mak' } }
 	NeoBundle "Shougo/neocomplete.vim"
 endif
 " ファイルオープンを便利に
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'Shougo/vimproc.vim', {
+\ 'build' : {
+\     'windows' : 'tools\\update-dll-mingw',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make',
+\     'linux' : 'make',
+\     'unix' : 'gmake',
+\    },
+\ }
 " Unite.vimで最近使ったファイルを表示できるようにする
 NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'Shougo/neosnippet'
