@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sed -e 's|:fire:|🔥 |g' \
+    -e 's|:bug:|🐛 |g' \
+    -e 's|:art:|🎨 |g' \
+    -e 's|:penguin:|🐧 |g' \
+    -e 's|:checkered_flag:|🏁 |g'
