@@ -1,0 +1,177 @@
+#!/bin/bash
+
+SANDBOX="$HOME/sandbox"
+IMAGEDIR="${SANDBOX}/image"
+PKGDIR="${SANDBOX}/pkg"
+TMPDIR="${SANDBOX}/tmp"
+DEBUG=${DEBUG:-n}
+
+main()
+{
+	operation="$1"
+	shift
+	case "$operation" in
+		imagedir)
+			echo "${IMAGEDIR}";;
+		refresh)
+			refresh_sandbox "$@";;
+		install)
+			install_sandbox "$@";;
+		disable)
+			disable_sandbox "$@";;
+		*)
+			_die "unknown operation: ${operation}";;
+	esac
+	return 0
+}
+
+install_sandbox()
+{
+	local sbname pkgdir pkginstname pkginstdir ignorelist
+	ignorelist=/dev/null
+	if [ "x$1" = x-E ]; then
+		ignorelist="$(readlink -f "$2")"
+		shift; shift
+	fi
+	sbname="$1"
+	shift
+	test -z "${sbname}" && _die "specify sandbox name"
+	test -z "$*" && _die "specify command"
+	pkgdir="${SANDBOX}/pkg/${sbname}"
+	pkginstname="$(date +%s)"
+	pkginstdir="${pkgdir}/${pkginstname}"
+
+	_ynquest "Now, install into ${pkginstdir}, okay? " || exit
+
+	test -e "${pkgdir}/tmp" && _rm -r "${pkgdir}/tmp"
+	mkdir -p "${pkgdir}/tmp"
+	DESTDIR="${pkgdir}/tmp/" "$@" || {
+		_rm -r "${pkgdir}/tmp"
+		_die "$1 failed"
+	}
+	_pushd "${pkgdir}"
+	mv tmp "${pkginstname}"
+	test -e latest && rm latest
+	ln -s ${pkginstname} latest
+	_pushd latest
+	localprefix="${IMAGEDIR#/}"
+	test -e "${localprefix}" && mv ${localprefix}/* .
+	cleanup_after_install "${ignorelist}"
+	_popd
+	_popd
+	refresh_sandbox ${sbname}
+}
+
+refresh_sandbox()
+{
+	echo ">>> Refreshing sandbox..." >&2
+	_pushd "${PKGDIR}"
+	test -e "${TMPDIR}" || mkdir "${TMPDIR}"
+	local dirlist="${TMPDIR}/dirlist"
+	test -e "${dirlist}" && rm "${dirlist}"
+	test -e "${dirlist}.tmp" && rm "${dirlist}.tmp"
+	for i in */latest; do
+		_pushd "$i"
+		find -mindepth 1 -type d -print >> "${dirlist}.tmp"
+		_popd "$i"
+	done
+	sort -u < "${dirlist}.tmp" > "${dirlist}"
+	_popd
+	test -d "${IMAGEDIR}" && _rm -r "${IMAGEDIR}"
+	mkdir -p "${IMAGEDIR}"
+	_pushd "${IMAGEDIR}"
+	xargs -d'\n' mkdir <"${dirlist}"
+	_popd
+	_pushd "${PKGDIR}"
+	local retcode=0
+	for i in */latest; do
+		_pushd "$i"
+		find -type d -print >"${TMPDIR}/filelist"
+		exec 9<"${TMPDIR}"/filelist
+		while read f <&9; do
+			find "$f" -maxdepth 1 -type f -print0 | \
+				xargs -0 --no-run-if-empty ln -t "${IMAGEDIR}/$f/" \
+				|| retcode=$?
+			find "$f" -maxdepth 1 \! \( -type f -o -type d \) -print0 \
+				| xargs -0 --no-run-if-empty cp -P -t "${IMAGEDIR}/$f/" \
+				|| retcode=$?
+		done
+		_popd
+	done
+	_popd
+	test ${retcode} -ne 0 && test x${FORCE_REFRESH} = x && exit ${retcode}
+}
+
+disable_sandbox()
+{
+	local sbname pkgdir
+	sbname="$1"
+	pkgdir="${PKGDIR}/${sbname}"
+	if test -d "${pkgdir}/latest"; then
+		rm "${pkgdir}/latest"
+	else
+		echo "${pkgdir}/latest is not found" >&2
+		exit 1
+	fi
+	refresh_sandbox
+}
+
+cleanup_after_install()
+{
+	removelist="share/info/dir"
+	for i in ${removelist}; do
+		test -e "$i" && rm -f "$i"
+	done
+
+	find -mindepth 1 \
+		| sed -e 's@^./@/@' \
+		| grep -f"$1" \
+		| sed -e 's@^/@./@' \
+		| xargs -d'\n' --no-run-if-empty rm -rf
+
+}
+_ynquest()
+{
+	test "x${DEBUG}" = xn && return 0
+	echo -n "$@"
+	while read answer ; do
+		case "$answer" in
+			y|yes)
+				return 0;;
+			n|no)
+				return 1;;
+		esac
+		echo -n "$@"
+	done
+}
+
+_rm()
+{
+	local arg
+	if [ "${DEBUG}" = y ]; then
+		echo "rm $@"
+		arg="-I"
+	else
+		arg="-f"
+	fi
+	rm "${arg}" "$@"
+}
+
+_pushd()
+{
+	pushd "$@" >/dev/null 2>&1 || _die "pushd failed: $@"
+}
+
+_popd()
+{
+	popd >/dev/null 2>&1
+}
+
+_die()
+{
+	echo "$@" >&2
+	exit 1
+}
+
+main "$@"
+exit "$?"
