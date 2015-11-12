@@ -1,5 +1,3 @@
-[include]
-	path = ~/.gitconfig.local
 [user]
 	signingkey = 28A22BD8
 [push]
@@ -35,3 +33,5 @@
 [url "git@github.com:"]
 	pushinsteadof = "https://github.com/"
 	pushinsteadof = "git://github.com/"
+[include]
+	path = ~/.gitconfig.local
