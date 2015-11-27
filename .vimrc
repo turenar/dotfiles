@@ -42,6 +42,7 @@ NeoBundle 'Shougo/vimproc.vim', {
 NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
+let g:neosnippet#snippets_directory='~/.vim/bundle/neosnippet-snippets/snippets/'
 NeoBundle 'vim-scripts/javacomplete'
 NeoBundle 'osyo-manga/vim-over'
 "NeoBundle 'soramugi/auto-ctags.vim'
@@ -149,6 +150,7 @@ set wildmenu
 set showcmd
 set display=lastline
 set modeline
+set modelines=2
 
 let g:clang_c_options = '-std=gnu11'
 let g:clang_cpp_options = '-std=c++11 -stdlib=libc++'
