@@ -23,7 +23,7 @@ export EDITOR='/usr/bin/vim'
 export HISTSIZE=30000
 export HISTFILESIZE=400000
 export HISTCONTROL='ignoreboth'
-export HISTIGNORE="fg*:bg*:history*"
+export HISTIGNORE="fg*:bg*:history"
 
 
 # 履歴ファイルを上書きではなく追加する。
