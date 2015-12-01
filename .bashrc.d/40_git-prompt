@@ -1,12 +1,4 @@
 #!/bin/sh
-if [[ "${HOSTNAME}" == ci1*m ]]; then
-	#_debug -n "Git Prompt Loading..."
-	#source /usr/share/git-core/git-prompt.sh
-	#_debug "ok"
-	#_debug -n "Git Completion Loading..."
-	source ~/.git-completion.bash
-	#_debug "ok"
-fi
 
 
 
