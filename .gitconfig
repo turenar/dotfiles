@@ -21,7 +21,9 @@
 	mff = merge --ff-only
 	p = pull --rebase
 	st = status
-
+	rea = rebase --abort
+	rec = rebase --continue
+	rei = rebase -i
 
 [pager]
 	log = diff-highlight | less
