@@ -9,11 +9,18 @@ function __turenar_bashrc_set_rcpath() {
 }
 
 function __turenar_bashrc_loader() {
-	local dir i
+	local dir i mingw
+	if [[ "$(uname)" == MINGW* ]]; then
+		mingw=y
+	else
+		mingw=
+	fi
 
 	for dir in ${__turenar_bashrc_rcpath}; do
 		for i in "${dir}"/*_*; do
-			if ! test -x "$i"; then
+			if test -z "${mingw}" -a -x "$i"; then
+				printf "\033[KIgnoring %s\n" "$i"
+			else
 				printf "\033[KLoading %s..." "$i"
 				if source "$i"; then
 					printf " ok.\r"

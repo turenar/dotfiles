@@ -94,7 +94,7 @@ function __git_ps1_brief() {
 	fi
 
 	branch="${branch##refs/heads/}"
-	if [ -n "${GIT_PS1_BRANCH_LENGTH}" -a "${#branch}" -gt "${GIT_PS1_BRANCH_LENGTH}" ]; then
+	if [ -n "${GIT_PS1_BRANCH_LENGTH}" ] && [ "${#branch}" -gt "${GIT_PS1_BRANCH_LENGTH}" ]; then
 		branch="$(printf "%.$((${GIT_PS1_BRANCH_LENGTH} - 2))s.." "${branch}")"
 	fi
 
