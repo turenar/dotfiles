@@ -42,7 +42,7 @@ main(){
 		build)
 			export FORCE_REFRESH=y
 			test -d build || mkdir build
-if false; then
+
 			useignorefile=n
 			ignorefile="${MYBINDIR}/archindep.sbignore"
 			for target in ${TARGETS}; do
@@ -61,7 +61,6 @@ if false; then
 				_popd
 				useignorefile=y
 			done
-		fi
 
 			check_path ${PREFIX}/bin
 			useignorefile=y
