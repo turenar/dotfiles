@@ -151,6 +151,7 @@ set showcmd
 set display=lastline
 set modeline
 set modelines=2
+set backspace=indent,eol,start
 
 let g:clang_c_options = '-std=gnu11'
 let g:clang_cpp_options = '-std=c++11 -stdlib=libc++'
