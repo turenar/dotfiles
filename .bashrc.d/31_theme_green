@@ -1,7 +1,8 @@
 #!/bin/sh
-GIT_PS1_COLOR=142
 
 function theme_green() {
+	GIT_PS1_COLOR=142
+	STATUS_FG=7
 	if [ "${UID}" -eq 0 ]; then
 		TIME_BG=157
 		TIME_FG=196

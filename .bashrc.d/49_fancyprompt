@@ -39,8 +39,9 @@ function fancyprompt {
 	local uahps="\\[$(bgcolor ${USERNAME_BG})$(fgcolor ${USERNAME_FG})\\]\\u\\[$(fgcolor ${ATMARK_FG})\\]@\\[$(fgcolor ${USERNAME_FG})\\]\\h"
 	local pwdps="\\[$(bgcolor ${PWD_BG})$(fgcolor ${PWD_TRUNKMARK_FG})\\]\${SMART_PWD_TRUNC}\\[$(fgcolor ${PWD_FG})\\]\${SMART_PWD}\\[$(resetcolor)\\]"
 	local extraps="\\[$(fgcolor ${EXTRA_FG})\\]${EXTRA_TXT}"
+	local statusps="\\[$(fgcolor ${STATUS_FG})\\]\${STATUS_TXT}"
 	local dollerps="\\[$(fgcolor ${DOLLAR_FG})\\]\\\$\\[$(resetcolor)\\] "
-	PS1="${timeps}${uahps} ${pwdps}\n${extraps}${dollerps}"
+	PS1="${timeps}${uahps} ${pwdps}\n${extraps}${statusps}${dollerps}"
 }
 
 
