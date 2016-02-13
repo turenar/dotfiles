@@ -17,7 +17,7 @@ alias sort='LC_ALL=C sort'
 alias by='byobu'
 # export PS1='\[\033[01;32m\]\u@gentoo\[\033[01;34m\] \w \$\[\033[00m\] '
 export PATH="${HOME}/bin:${PATH}:/sbin:/usr/sbin"
-export PAGER='/usr/bin/less -R'
+export PAGER='/usr/bin/less'
 export EDITOR='/usr/bin/vim'
 #export MAIL='.maildir/'
 export HISTSIZE=30000
