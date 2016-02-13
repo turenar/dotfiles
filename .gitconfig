@@ -16,7 +16,8 @@
 	dic = diff --cached -M -C
 	f = fetch
 	lga = log --all --decorate --graph --oneline
-	lgp = log --patch-with-stat
+	lgp = log --patch-with-stat -M -C
+	lgs = log --stat -M -C
 	m = merge --no-ff
 	mff = merge --ff-only
 	p = pull --rebase
