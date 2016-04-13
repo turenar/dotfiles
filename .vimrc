@@ -152,6 +152,11 @@ set display=lastline
 set modeline
 set modelines=2
 set backspace=indent,eol,start
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set autoindent
+set smartindent
 
 let g:clang_c_options = '-std=gnu11'
 let g:clang_cpp_options = '-std=c++11 -stdlib=libc++'
