@@ -1,0 +1,5 @@
+#!/bin/sh
+randpw(){
+	< /dev/urandom tr -dc "[:${1:-graph}:]" | head -c${2:-16}
+	echo
+}
