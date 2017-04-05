@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if test -e /usr/bin/virtualenvwrapper.sh; then
-	source /usr/bin/virtualenvwrapper.sh
+	#source /usr/bin/virtualenvwrapper.sh
 	export WORKON_HOME=~/.virtualenvs
 fi
 
