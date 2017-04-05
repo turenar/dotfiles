@@ -19,7 +19,11 @@ which nvim >/dev/null 2>&1 && alias vim='nvim'
 # export PS1='\[\033[01;32m\]\u@gentoo\[\033[01;34m\] \w \$\[\033[00m\] '
 export PATH="${HOME}/bin:${PATH}:/sbin:/usr/sbin"
 export PAGER='/usr/bin/less'
-export EDITOR='/usr/bin/vim'
+if which nvim >/dev/null 2>&1; then
+	export EDITOR='/usr/bin/nvim'
+else
+	export EDITOR='/usr/bin/vim'
+fi
 #export MAIL='.maildir/'
 export HISTSIZE=30000
 export HISTFILESIZE=400000
