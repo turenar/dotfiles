@@ -38,3 +38,5 @@
 	pushinsteadof = "git://github.com/"
 [include]
 	path = ~/.gitconfig.local
+[diff]
+	compactionHeuristic = true

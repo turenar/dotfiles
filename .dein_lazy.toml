@@ -1,0 +1,39 @@
+[[plugins]]
+repo = 'jiangmiao/auto-pairs'
+on_i = 1
+
+[[plugins]]
+repo = 'Shougo/neoyank.vim'
+on_path = '.*'
+on_i = 1
+
+[[plugins]]
+repo = 'Shougo/neosnippet'
+depends = ['neosnippet-snippets']
+on_i = 1
+on_ft = ['snippet']
+
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+if = 'has("nvim")'
+on_i = 1
+
+[[plugins]]
+repo = 'tyru/caw.vim' # comment
+on_i = 1
+
+[[plugins]]
+repo = 'bronson/vim-trailing-whitespace'
+on_i = 1
+
+[[plugins]]
+repo = 'nathanaelkane/vim-indent-guides'
+on_i = 1
+
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+on_i = 1
+
+[[plugins]]
+repo = 'igankevich/mesonic'
+on_ft = ['meson']
