@@ -17,6 +17,11 @@ if dein#load_state(s:dein_dir)
 	call dein#load_toml(s:toml, {'lazy': 0})
 	call dein#load_toml(s:lazy_toml, {'lazy': 1})
 
+	call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
+	if dein#check_install()
+		call dein#install()
+	endif
+
 	call dein#end()
 	call dein#save_state()
 endif
@@ -25,12 +30,9 @@ if has('vim_starting')
 	set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
-if dein#check_install(['Shougo/vimproc.vim'])
-	call dein#install(['Shougo/vimproc.vim'])
-endif
-if dein#check_install()
-	call dein#install()
-endif
+"if dein#check_install(['Shougo/vimproc.vim'])
+"	call dein#install(['Shougo/vimproc.vim'])
+"endif
 
 nnoremap <ESC><ESC> :nohlsearch<CR>
 
