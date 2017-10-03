@@ -70,6 +70,7 @@ set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V
 "set statusline+=%{fugitive#statusline()}
 
 let g:indent_guides_enable_on_vim_startup = 1
+let g:deoplete#enable_at_startup = 1
 
 nmap <Leader>c <Plug>(caw:i:toggle)
 vmap <Leader>c <Plug>(caw:i:toggle)
