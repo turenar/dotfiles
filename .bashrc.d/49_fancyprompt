@@ -1,8 +1,7 @@
 #!/bin/sh
 
 function smart_pwd {
-	# Orignal code should be http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x783.html
-	# but i can't determine whether this really is it because time passed.
+	# Original code may be https://gist.github.com/ricardochimal/293517
 	local pwdmaxlen=$(( $COLUMNS-35 ))
 	local trunc_symbol=".."
 	local dir=${PWD##*/}
