@@ -1,4 +1,6 @@
 #!/bin/sh
+# Original may be https://github.com/git/git/blob/master/contrib/completion/git-prompt.bash
+# GPL 2.0
 
 
 
