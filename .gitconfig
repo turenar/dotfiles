@@ -15,16 +15,20 @@
 	dia = diff -M -C HEAD
 	dic = diff --cached -M -C
 	f = fetch
+	git = !git
 	lga = log --all --decorate --graph --oneline
 	lgp = log --patch-with-stat -M -C
 	lgs = log --stat -M -C
 	m = merge --no-ff
 	mff = merge --ff-only
 	p = pull --rebase
-	st = status
+	pff = pull --ff-only
+	pu = push -u origin HEAD
 	rea = rebase --abort
 	rec = rebase --continue
 	rei = rebase -i
+	reset-upst = reset --hard @{upstream}
+	st = status
 
 [pager]
 	log = diff-highlight | less
