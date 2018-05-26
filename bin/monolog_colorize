@@ -1,0 +1,14 @@
+#!/bin/bash
+if ${1+:} false; then
+	exec <"$1"
+fi
+ESC=$(printf '\e')
+sed -e 's@^\(\[[^\[]\+\]\)@'${ESC}'[1;36m\1'${ESC}'[0m@' \
+    -e "s@DEBUG@${ESC}[1;36mDEBUG${ESC}[0m@" \
+    -e "s@INFO@${ESC}[1;34mINFO${ESC}[0m@" \
+    -e "s@WARNING@${ESC}[1;33mWARNING${ESC}[0m@" \
+    -e "s@ERROR@${ESC}[1;31mERROR${ESC}[0m@" \
+    -e "s@CRITICAL@${ESC}[1;31;43mCRITICAL${ESC}[0m@" \
+	-e 's@\("[^"]\+"\):@'${ESC}'[34m\1'${ESC}'[0m:@g' \
+	-e 's@\\n@\n@g' \
+	-e 's@\n*\(#[0-9]\+\) \([^(]\+\)\(([0-9]\+)\): @\n'${ESC}'[1;33m\1 '${ESC}'[0;32m\2'${ESC}'[34m\3'${ESC}'[0m: @g'
