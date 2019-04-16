@@ -25,6 +25,7 @@
 	pff = pull --ff-only
 	pu = push -u origin HEAD
 	rea = rebase --abort
+	resq = rebase --autosquash -i
 	rec = rebase --continue
 	rei = rebase -i
 	reset-upst = reset --hard @{upstream}
