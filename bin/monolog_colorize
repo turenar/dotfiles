@@ -1,7 +1,63 @@
 #!/bin/bash
-if ${1+:} false; then
-	exec <"$1"
+OPTS=$(getopt -o fp: --long follow,prefix: -- "$@")
+if [ $? -ne 0 ]; then
+	exit 1
 fi
+eval set -- "${OPTS}"
+
+while true; do
+	case "$1" in
+		-f|--follow)
+			opt_follow=true
+			shift;;
+		-p|--prefix)
+			opt_prefix="$2"
+			shift 2;;
+		--)
+			shift
+			break;;
+		*)
+			echo "Internal error! $1" >&2
+			exit 1;;
+	esac
+done
+
+if ${1+:} false; then
+	if ${opt_prefix+:} false; then
+		echo "--prefix is ignored because you specify filename" >&2
+	fi
+	if ${opt_follow:-false}; then
+		exec < <(tail -f "$@")
+	else
+		if [ $# -gt 1 ]; then
+			echo "multiple files are not supported without --follow">&2
+			exit 1
+		elif [ -f "$1" -a -r "$1" ]; then
+			exec <"$1"
+		else
+			echo "$1: not found or not readable" >&2
+			exit 1
+		fi
+	fi
+elif ${opt_prefix+:} false; then
+	for i in "${opt_prefix}"*; do
+		target_filename="$i"
+	done
+	if ${target_filename+:} false; then
+		echo "using ${target_filename}" >&2
+		if ${opt_follow:-false}; then
+			exec < <(tail -f "${target_filename}")
+		else
+			exec <"${target_filename}"
+		fi
+	else
+		echo "${opt_prefix}*: not found" >&2
+		exit 1
+	fi
+elif [ -t 1 ]; then
+	echo "You should specify filename or redirect input" >&2
+fi
+
 ESC=$(printf '\e')
 sed -e 's@^\(\[[^\[]\+\]\)@'${ESC}'[1;36m\1'${ESC}'[0m@' \
     -e "s@DEBUG@${ESC}[1;36mDEBUG${ESC}[0m@" \
