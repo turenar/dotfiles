@@ -57,9 +57,7 @@ set shiftwidth=4
 set softtabstop=4
 set autoindent
 set smartindent
-if has('nvim')
-	set termguicolors
-endif
+set termguicolors
 " コマンドラインに使われる画面上の行数
 set cmdheight=1
 " エディタウィンドウの末尾から2行目にステータスラインを常時表示させる
