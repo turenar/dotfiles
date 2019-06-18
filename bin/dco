@@ -1,0 +1,34 @@
+#!/bin/bash -u
+
+_pwd="$(pwd)"
+
+while true; do
+	if [ -f docker-compose.yml ]; then
+		cd "$(dirname "$(readlink -f docker-compose.yml)")"
+		break
+	fi
+	_old_pwd="${_pwd}"
+	cd ..
+	_pwd="$(pwd)"
+	if [ "${_pwd}" = "${_old_pwd}" ]; then
+		echo "docker-compose.yml is not found" >&2
+		exit 1
+	fi
+done
+
+if [ "${1:-}" = "cmd" ]; then
+	run_on_container=$(git config --get docker-compose.default-container 2>/dev/null)
+	extra_options=()
+	if [ $? -ne 0 ]; then
+		echo "git config 'docker-compose.default-container' is not set" 2>&1
+		exit 1
+	fi
+	shift
+	if [ "${1:-}" = "-T" ]; then
+		extra_options+=(-T)
+		shift
+	fi
+	docker-compose exec "${extra_options[@]}" "${run_on_container}" "$@"
+else
+	docker-compose "$@"
+fi
