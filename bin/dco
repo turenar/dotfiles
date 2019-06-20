@@ -17,8 +17,8 @@ while true; do
 done
 
 if [ "${1:-}" = "cmd" ]; then
-	run_on_container=$(git config --get docker-compose.default-container 2>/dev/null)
 	extra_options=()
+	run_on_container=$(git config --get docker-compose.default-container 2>/dev/null)
 	if [ $? -ne 0 ]; then
 		echo "git config 'docker-compose.default-container' is not set" 2>&1
 		exit 1
@@ -28,7 +28,7 @@ if [ "${1:-}" = "cmd" ]; then
 		extra_options+=(-T)
 		shift
 	fi
-	docker-compose exec "${extra_options[@]}" "${run_on_container}" "$@"
+	docker-compose exec "${extra_options[@]+"${extra_options[@]}"}" "${run_on_container}" "$@"
 else
 	docker-compose "$@"
 fi
