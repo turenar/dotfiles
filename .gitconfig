@@ -30,6 +30,8 @@
 	rei = rebase -i
 	reset-upst = reset --hard @{upstream}
 	st = status
+	sw = switch
+	swd = switch --detach
 
 [pager]
 	log = diff-highlight | less
