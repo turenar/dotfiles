@@ -47,3 +47,6 @@
 	path = ~/.gitconfig.local
 [diff]
 	compactionHeuristic = true
+[pull]
+	ff = only
+	rebase = false
