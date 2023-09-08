@@ -13,7 +13,7 @@ alias sort='LC_ALL=C sort'
 alias by='byobu'
 which nvim >/dev/null 2>&1 && alias vim='nvim'
 # export PS1='\[\033[01;32m\]\u@gentoo\[\033[01;34m\] \w \$\[\033[00m\] '
-export PATH="${HOME}/bin:${PATH}:/sbin:/usr/sbin"
+export PATH="${HOME}/bin:${HOME}/.local/bin:${PATH}:/sbin:/usr/sbin"
 export PAGER='/usr/bin/less'
 if which nvim >/dev/null 2>&1; then
 	export EDITOR="$(which nvim)"
@@ -41,7 +41,7 @@ shopt -s checkwinsize
 # (メチャクチャ候補が多いので。)
 shopt -s no_empty_cmd_completion
 
-stty kill undef
-stty stop undef
+stty kill undef || true
+stty stop undef || true
 
 export GPG_TTY=`tty`

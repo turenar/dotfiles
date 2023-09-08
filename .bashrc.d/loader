@@ -18,15 +18,8 @@ function __turenar_bashrc_loader() {
 
 	for dir in ${__turenar_bashrc_rcpath}; do
 		for i in "${dir}"/*_*; do
-			if test -z "${mingw}" -a -x "$i"; then
-				printf "\033[KIgnoring %s\n" "$i"
-			else
-				printf "\033[KLoading %s..." "$i"
-				if source "$i"; then
-					printf " ok.\r"
-				else
-					echo " failed."
-				fi
+			if ! source "$i"; then
+				echo "Failed to load $i."
 			fi
 		done
 	done

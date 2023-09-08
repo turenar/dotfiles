@@ -1,7 +1,8 @@
 #!/bin/sh
 
-__stty_default_config="$(stty -g)"
+__stty_default_config="$(stty -g || true)"
 
 default_tty (){
 	stty ${__stty_default_config}
+	setterm -cursor on
 }
