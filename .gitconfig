@@ -1,13 +1,9 @@
-[user]
-	signingkey = 28A22BD8
 [push]
 	default = simple
 [color]
 	ui = auto
 [alias]
 	ci = commit
-	co = checkout
-	cot = checkout --track
 	cp = cherry-pick
 	cpa = cherry-pick --abort
 	cpi = cherry-pick -x
@@ -38,8 +34,6 @@
 	show = diff-highlight | less
 	diff = diff-highlight | less
 
-[url "git@github.com:turenar/"]
-	insteadof = gh:
 [url "git@github.com:"]
 	pushinsteadof = "https://github.com/"
 	pushinsteadof = "git://github.com/"
